@@ -39,3 +39,32 @@ Start
   Not yet finalised, but probably something along the lines of setting up a 
 
   Perl Web server to server up pages build from MongoDB.
+
+
+Admin Notes
+-----------
+
+# Get MongoDB
+  http://fastdl.mongodb.org/linux/mongodb-linux-i686-2.0.4.tgz
+
+# RVM - Ruby (for emberjs build)
+  https://rvm.beginrescueend.com/
+
+Dev Notes
+---------
+
+# MongoDb REST and curl
+
+## List data database
+  curl -i -H "Accept: application/json" http://127.0.0.1:48534/databases/
+
+## Create a document (and db and collection due to upsert issum)
+  curl -i -H "Accept: application/json" -X POST -d "{firstName: 'benjamin'}" http://127.0.0.1:48534/testdb/testcoll/
+
+## List documents
+  curl -i -H "Accept: application/json" -X GET http://127.0.0.1:48534/testdb/testcoll/
+
+## Update a document (should work, by currently does not!)
+  curl -i -H "Accept: application/json" -X PUT -d "{firstName: 'ben', lastName: 'netanyaho'}" http://127.0.0.1:48534/testdb/testcoll/4f745fea8e234dad19615026
+
+
