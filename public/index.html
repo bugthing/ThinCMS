@@ -1,13 +1,16 @@
 <!doctype html>
-<!--[if lt IE 7 ]> <html lang="en" class="ie6"> <![endif]--> <!--[if IE 7 ]>    <html lang="en" class="ie7"> <![endif]--> <!--[if IE 8 ]>    <html lang="en" class="ie8"> <![endif]--> <!--[if IE 9 ]>    <html lang="en" class="ie9"> <![endif]-->
+<!--[if lt IE 7 ]> <html lang="en" class="ie6"> <![endif]--> 
+<!--[if IE 7 ]> <html lang="en" class="ie7"> <![endif]--> 
+<!--[if IE 8 ]> <html lang="en" class="ie8"> <![endif]--> 
+<!--[if IE 9 ]> <html lang="en" class="ie9"> <![endif]-->
 <!--[if (gt IE 9)|!(IE)]><!--> <html lang="en"> <!--<![endif]-->
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-  <title></title>
-  <meta name="description" content="">
-  <meta name="author" content="">
+  <title>ThinCMS</title>
+  <meta name="description" content="A content management system as simple as its creator">
+  <meta name="author" content="Benjamin Martin">
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -20,6 +23,9 @@
   <![endif]-->
 
   <!--HandleBar template -->
+  [% FOREACH file = dir.files %]
+     [% file.name %] [% file.path %] 
+  [% END %]
 
 </head>
 <body>
