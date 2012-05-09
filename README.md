@@ -13,10 +13,10 @@ Start
 
 # Start MongoDB
 
-  mongod --port=47534 --dbpath=/data/mdb --rest
+  mongod --port=28017 --dbpath=/data/mdb --rest
 
 # Get EmberJS
-
+  
   git submodule add git://github.com/emberjs/ember.js.git ./submodules/ember.js
   cd ./submodules/ember.js/
   bundle install
@@ -46,6 +46,8 @@ Admin Notes
 
 # Get MongoDB
   http://fastdl.mongodb.org/linux/mongodb-linux-i686-2.0.4.tgz
+  # Start MongoDB
+  mongod --rest --dbpath=$DBPATH
 
 # RVM - Ruby (for emberjs build)
   https://rvm.beginrescueend.com/
@@ -56,15 +58,13 @@ Dev Notes
 # MongoDb REST and curl
 
 ## List data database
-  curl -i -H "Accept: application/json" http://127.0.0.1:48534/databases/
+  curl -i -H "Accept: application/json" http://127.0.0.1:28017/databases/
 
 ## Create a document (and db and collection due to upsert issum)
-  curl -i -H "Accept: application/json" -X POST -d "{firstName: 'benjamin'}" http://127.0.0.1:48534/testdb/testcoll/
+  curl -i -H "Accept: application/json" -X POST -d "{firstName: 'benjamin'}" http://127.0.0.1:28017/testdb/testcoll/
 
 ## List documents
-  curl -i -H "Accept: application/json" -X GET http://127.0.0.1:48534/testdb/testcoll/
+  curl -i -H "Accept: application/json" -X GET http://127.0.0.1:28017/testdb/testcoll/
 
 ## Update a document (should work, by currently does not!)
-  curl -i -H "Accept: application/json" -X PUT -d "{firstName: 'ben', lastName: 'netanyaho'}" http://127.0.0.1:48534/testdb/testcoll/4f745fea8e234dad19615026
-
-
+  curl -i -H "Accept: application/json" -X PUT -d "{firstName: 'ben', lastName: 'netanyaho'}" http://127.0.0.1:28017/testdb/testcoll/4f745fea8e234dad19615026
