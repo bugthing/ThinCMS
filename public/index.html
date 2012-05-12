@@ -23,24 +23,65 @@
   <![endif]-->
 
   <!--HandleBar template -->
-  [% FOREACH file = dir.files %]
-     [% file.name %] [% file.path %] 
-  [% END %]
 
 </head>
 <body>
 
   <script type="text/x-handlebars">
-    {{#view App.MyView}}
-      <h1>Hello world!</h1>
-    {{/view}}
+      {{view App.ContentTypeSelectView }}
   </script>
+
+   <div id="container">
+      <div id="entrys-list">
+
+        <script type="text/x-handlebars">
+          <h2> Content Entrys </h2>
+          <ul>
+            {{#each App.entrysController}}
+                {{#view App.EntryListView entryBinding="this"}}
+		    {{#with entry}}
+                        <li> <b>{{title}}</b> </li>
+                    {{/with}}
+                {{/view}}
+            {{/each}}
+          </ul>
+		{{#view Ember.Button target="App.entrysController" action="newEntry"}} New Entry {{/view}}
+        </script>
+
+      </div>
+
+      <div id="detail">
+
+        <script type="text/x-handlebars">
+
+          {{#if App.selectedEntryController.entry}}
+
+            {{#view App.EntryView}}
+	    	<div class="title">
+		    {{view Ember.TextField valueBinding="entry.title"}} 
+		    {{view Ember.TextArea  valueBinding="entry.content"}} 
+		    {{#view Ember.Button target="App.selectedEntryController" action="updateEntry"}}
+		    	Update
+		    {{/view}}
+              	</div>
+              <div class="content">
+              </div>
+
+            {{/view}}
+
+          {{else}}
+            <div class="no-content-selected">No content selected.</div>
+          {{/if}}
+        </script>
+
+    </div>
 
   <script src="./js/libs/jquery-1.7.2.min.js"></script>
   <script src="./js/libs/emberjs/ember.min.js"></script>
   <script src="./js/app.js"></script>
+  <script src="./js/controllers.js"></script>
   <script src="./js/models.js"></script>
   <script src="./js/views.js"></script>
-  <script src="./js/controllers.js"></script>
+
 </body>
 </html>
