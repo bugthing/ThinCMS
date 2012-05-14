@@ -1,0 +1,109 @@
+
+/*
+    \\ ======== START - Fonts ================================= //
+*/
+
+@font-face {
+  font-family: 'Droid Sans Mono';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Droid Sans Mono'), local('DroidSansMono'), url('http://themes.googleusercontent.com/static/fonts/droidsansmono/v4/ns-m2xQYezAtqh7ai59hJYW_AySPyikQrZReizgrnuw.ttf') format('truetype');
+}
+
+/*
+    \\ ======== END - Fonts ================================== //
+*/
+
+/*
+    \\ ======== START - My Styles ================================= //
+*/
+
+body {
+	font-family: 'Droid Sans Mono', monaco, 'courier new', courier, monospaced;
+    color: #fff;
+}
+
+.thincms-header {
+    padding: 10px 0 10px 0;
+    margin: 0 0 30px 0;
+    display: block;
+    clear: both;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.7);
+    border-bottom: 10px solid rgba(0,0,0,0.8);
+}
+
+
+#thincms-container {
+    position: absolute;
+    left: 50%;
+    margin-left: -450px;
+    width: 900px;
+    top: 70px;
+    bottom: 10px;
+    padding: 10px;
+    border-radius: 12px;
+}
+
+#entrys-list{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 300px;
+    bottom: 0;
+}
+
+#entry-detail{
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    overflow:auto;
+    width: 600px;
+}
+
+
+ul {
+    list-style: none;
+    width: 100%;
+    margin:0px;
+    padding: 0px;
+}
+li {
+    padding: 10px;
+    margin: 10px;
+    border: thin solid #fff;
+}
+li:hover {
+    background: #fff;
+}
+
+.termcontainer {
+	border: 3px solid #efefef;
+	display: block;
+	background-color: rgb(0,0,0);
+	background-color: rgba(0,0,0,0.7);
+	box-shadow: 0 10px 10px rgba(0,0,0,0.7);
+	border-radius: 3px;
+}
+
+.terminput {
+    padding: 10px;
+    margin: 10px;
+    border: thick solid #000;
+    background: #ddd;
+    color: green;
+}
+#entry-list .terminput{
+    width: 290px;
+}
+#entry-detail .terminput{
+    width: 550px;
+}
+#entry-detail textarea.terminput{
+    height: 100px;
+}
+.termbutton {
+    background: green;
+    color: #fff;
+}
