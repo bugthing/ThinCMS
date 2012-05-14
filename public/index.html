@@ -26,62 +26,58 @@
 
 </head>
 <body>
+	<div id="thincms-container">
+	
+		<div id="entrys-list">
 
-  <script type="text/x-handlebars">
-      {{view App.ContentTypeSelectView }}
-  </script>
+			<script type="text/x-handlebars">
+			    {{view App.ContentTypeSelectView }}
+			</script>
+	
+			<script type="text/x-handlebars">
 
-   <div id="container">
-      <div id="entrys-list">
+		  	  	<ul>
+		  	  	  {{#each App.entrysController}}
+		  	  	      {{#view App.EntryListView entryBinding="this"}}
+		  	  	          {{#with entry}}
+		  	  	              <li> {{title}} </li>
+		  	  	          {{/with}}
+		  	  	      {{/view}}
+		  	  	  {{/each}}
+		  	  	</ul>
+				
+				{{#if App.entrysController.mcoll}}
+		  			{{#view Ember.Button target="App.entrysController" action="newEntry" class="button"}} New Entry {{/view}}
+		  	  	{{else}}
+					Please select a content type...	
+				{{/if}}
+		  	</script>
+	
+		</div>
 
-        <script type="text/x-handlebars">
-          <h2> Content Entrys </h2>
-          <ul>
-            {{#each App.entrysController}}
-                {{#view App.EntryListView entryBinding="this"}}
-		    {{#with entry}}
-                        <li> <b>{{title}}</b> </li>
-                    {{/with}}
-                {{/view}}
-            {{/each}}
-          </ul>
-		{{#view Ember.Button target="App.entrysController" action="newEntry"}} New Entry {{/view}}
-        </script>
+		<div id="entry-detail">
+	
+		  	<script type="text/x-handlebars">
+		  	  	{{#if App.selectedEntryController.entry}}
+		  	  	  	{{#view App.EntryView}}
+		  	  	  		{{view Ember.TextField valueBinding="entry.title"}} 
+		  	  	  		{{view Ember.TextArea  valueBinding="entry.content"}} 
+		  	  	  		{{#view Ember.Button target="App.selectedEntryController" action="updateEntry" class="button"}} Update {{/view}}
+		  	  	  		{{#view Ember.Button target="App.selectedEntryController" action="deleteEntry" class="button"}} Delete {{/view}}
+		  	  	  	{{/view}}
+		  	  	{{else}}
+		  	  	  	<div class="no-content-selected">No content selected.</div>
+		  	  	{{/if}}
+		  	</script>
+	
+		</div>
+	</div>
 
-      </div>
-
-      <div id="detail">
-
-        <script type="text/x-handlebars">
-
-          {{#if App.selectedEntryController.entry}}
-
-            {{#view App.EntryView}}
-	    	<div class="title">
-		    {{view Ember.TextField valueBinding="entry.title"}} 
-		    {{view Ember.TextArea  valueBinding="entry.content"}} 
-		    {{#view Ember.Button target="App.selectedEntryController" action="updateEntry"}}
-		    	Update
-		    {{/view}}
-              	</div>
-              <div class="content">
-              </div>
-
-            {{/view}}
-
-          {{else}}
-            <div class="no-content-selected">No content selected.</div>
-          {{/if}}
-        </script>
-
-    </div>
-
-  <script src="./js/libs/jquery-1.7.2.min.js"></script>
-  <script src="./js/libs/emberjs/ember.min.js"></script>
-  <script src="./js/app.js"></script>
-  <script src="./js/controllers.js"></script>
-  <script src="./js/models.js"></script>
-  <script src="./js/views.js"></script>
-
+	<script src="./js/libs/jquery-1.7.2.min.js"></script>
+	<script src="./js/libs/emberjs/ember.min.js"></script>
+	<script src="./js/app.js"></script>
+	<script src="./js/models.js"></script>
+	<script src="./js/views.js"></script>
+	<script src="./js/controllers.js"></script>
 </body>
 </html>

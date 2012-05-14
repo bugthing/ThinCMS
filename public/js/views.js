@@ -28,10 +28,3 @@ App.EntryListView = Ember.View.extend({
 App.EntryView = Ember.View.extend({
     entryBinding: 'App.selectedEntryController.entry',
 });
-
-//App.EntryView = Ember.ContainerView.create({
-//    entryBinding: 'App.selectedEntryController.entry',
-//    childViews: [ Ember.View.create({ entry: this.entry }) ]
-//});
-
-

@@ -1,1 +1,1 @@
-var App = Em.Application.create();
+var App = Em.Application.create({ mdb: 'testdb' });

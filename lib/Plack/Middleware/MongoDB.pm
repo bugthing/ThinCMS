@@ -153,7 +153,7 @@ sub _process_mongo_request {
 
             # create doc
 
-            $id = $collection->insert({ some => 'data' });
+            $id = $collection->insert( $data );
 
             $json = { 'ok' => 1, msg => 'added', _id => $id };
 

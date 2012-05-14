@@ -1,48 +1,6 @@
 
-App.ContentType = Ember.Object.extend({
-    id: null,
-    name: null
-});
-App.Entry = Ember.Object.extend({
-    id: null,
-    title: null,
-    content: null,
-
-    save: function(){
-
-        var type = 'POST';
-        var url = '/mongodb/testdb/entrys';
-        var data = JSON.stringify({
-            title: this.get('title'),
-            content: this.get('content'),
-        });
-
-        var id = this.get('id');
-        if ( typeof(id) !== 'undefined' ) {
-            type = 'PUT';
-            url = '/mongodb/testdb/entrys/' + id;
-        }
-
-        var self = this;
-        $.ajax({
-            url: url,
-            type: type,
-            dataType: 'json',
-            data: data,
-            contentType: 'application/json',
-            processData: false,
-            success: function(data) {
-                alert('saved');
-          },
-          error: function() {
-              alert('Could not save entry');
-          }
-        });
-    }
-});
-
 App.contentTypeController = Ember.ArrayController.create({
-    content: [ null,
+    content: [ Ember.Object.create({ id: 0, name:'-- please select --'}),
         App.ContentType.create({id: 1, name: 'Blog'}),
         App.ContentType.create({id: 2, name: 'Events'}),
         App.ContentType.create({id: 3, name: 'Page'}) 
@@ -58,19 +16,26 @@ App.selectedContentTypeController = Ember.Object.create({
 
 App.entrysController = Ember.ArrayController.create({
     content: [],
-    contentType: function() {
-        return App.selectedContentTypeController.get('contentType');
+
+    mcoll: function() {
+        if ( App.selectedContentTypeController.get('contentType') == null || App.selectedContentTypeController.get('contentType').id == 0 ) {
+            return null;
+        }
+        return App.selectedContentTypeController.get('contentType').name;
     }.property('App.selectedContentTypeController.contentType'),
+
     loadEntrys: function() {
 
-	    if ( this.get('contentType') == null ) {
+	    if ( this.get('mcoll') == null ) {
             this.set('content', [] );
             return;
 	    }
 
+        var mcoll = this.get('mcoll');
+
         var self = this;
         $.ajax({
-            url: '/mongodb/testdb/entrys',
+            url: '/mongodb/' + App.get('mdb') + '/' + mcoll,
             dataType: 'json',
             success: function(data) {
 	            var entrys = new Array();
@@ -81,6 +46,7 @@ App.entrysController = Ember.ArrayController.create({
                     for(var key in row["_id"] ){ id = row["_id"][key]; }
 
 	                entrys.push( App.Entry.create({ 
+                        mcoll: mcoll,
                         id: id,
                         title: row["title"],
                         content: row["content"]
@@ -95,7 +61,7 @@ App.entrysController = Ember.ArrayController.create({
     },
     newEntry: function() {
         this.pushObject( App.Entry.create({ 
-            id: 12, 
+            mcoll: this.get('mcoll'),
             title: "New Entry",  
             content: "Some new content"
         }))
@@ -104,8 +70,9 @@ App.entrysController = Ember.ArrayController.create({
 
 App.selectedEntryController = Ember.Object.create({
     entry: null,
-    updateEntry: function() {
-        alert('test:' + this.entry.title )
-        this.entry.save();
+    updateEntry: function() { this.entry.save(); },
+    deleteEntry: function() { 
+        this.entry.delete();
+        this.get('entry', null);
     }
 })
