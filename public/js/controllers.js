@@ -10,7 +10,8 @@ App.contentTypeController = Ember.ArrayController.create({
 App.selectedContentTypeController = Ember.Object.create({
     contentType: null,
     changedSelection: function() {
-	    App.entrysController.loadEntrys();
+        App.selectedEntryController.clearEntry(); // clear any entry being edited.
+	    App.entrysController.loadEntrys(); // load list of entrys 
     }.observes('contentType')
 });
 
@@ -45,12 +46,12 @@ App.entrysController = Ember.ArrayController.create({
                     var id;
                     for(var key in row["_id"] ){ id = row["_id"][key]; }
 
-	                entrys.push( App.Entry.create({ 
+	                var entry = App.Entry.create({ 
                         mcoll: mcoll,
-                        id: id,
-                        title: row["title"],
-                        content: row["content"]
-                    }));
+                        "id": id,
+                        title: row["title"]
+                    });
+	                entrys.push( entry );
                 }
                 self.set('content', entrys);
             },
@@ -60,19 +61,24 @@ App.entrysController = Ember.ArrayController.create({
         });
     },
     newEntry: function() {
-        this.pushObject( App.Entry.create({ 
-            mcoll: this.get('mcoll'),
-            title: "New Entry",  
-            content: "Some new content"
-        }))
+        this.pushObject( App.Entry.create({ mcoll: this.get('mcoll') }) )
+    },
+    removeEntry: function(entry) {
+        this.removeObject(entry);
     }
 });
 
 App.selectedEntryController = Ember.Object.create({
-    entry: null,
+    entry: Ember.required(),
+    clearEntry: function() {
+        if ( this.get('entry') !== null) {
+            App.entrysController.removeEntry( this.entry );
+            this.set('entry', null);
+        }
+    },
     updateEntry: function() { this.entry.save(); },
     deleteEntry: function() { 
         this.entry.delete();
-        this.get('entry', null);
+        this.clearEntry();
     }
 })

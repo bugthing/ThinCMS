@@ -1,26 +1,10 @@
 
 /*
-    \\ ======== START - Fonts ================================= //
-*/
-
-@font-face {
-  font-family: 'Droid Sans Mono';
-  font-style: normal;
-  font-weight: normal;
-  src: local('Droid Sans Mono'), local('DroidSansMono'), url('http://themes.googleusercontent.com/static/fonts/droidsansmono/v4/ns-m2xQYezAtqh7ai59hJYW_AySPyikQrZReizgrnuw.ttf') format('truetype');
-}
-
-/*
-    \\ ======== END - Fonts ================================== //
-*/
-
-/*
     \\ ======== START - My Styles ================================= //
 */
 
 body {
-	font-family: 'Droid Sans Mono', monaco, 'courier new', courier, monospaced;
-    color: #fff;
+    font-family: Segoe UI, Helvetica, Arial, sans-serif; 
 }
 
 .thincms-header {
@@ -28,11 +12,13 @@ body {
     margin: 0 0 30px 0;
     display: block;
     clear: both;
-    background-color: rgb(0,0,0);
-    background-color: rgba(0,0,0,0.7);
-    border-bottom: 10px solid rgba(0,0,0,0.8);
+    background-color: #9bcc60;
+    border-bottom: 10px solid #201913;
+    color: #201913;
 }
-
+.thincms-header h1, p {
+    text-align: center;
+}
 
 #thincms-container {
     position: absolute;
@@ -61,39 +47,26 @@ body {
     width: 600px;
 }
 
-
 ul {
     list-style: none;
     width: 100%;
     margin:0px;
     padding: 0px;
 }
-li {
-    padding: 10px;
-    margin: 10px;
-    border: thin solid #fff;
-}
-li:hover {
-    background: #fff;
-}
 
-.terminput {
-    padding: 10px;
-    margin: 10px;
-    border: thick solid #000;
-    background: #ddd;
-    color: green;
+.is-selected {
+    background: #9bcc60 !important;
+    color: #000 !important;
 }
-#entry-list .terminput{
+.forminput {
+    margin: 10px;
+}
+#entry-list .forminput{
     width: 290px;
 }
-#entry-detail .terminput{
-    width: 550px;
+#entry-detail .forminput{
+    width: 578px;
 }
-#entry-detail textarea.terminput{
+#entry-detail textarea.forminput{
     height: 100px;
-}
-.termbutton {
-    background: green;
-    color: #fff;
 }

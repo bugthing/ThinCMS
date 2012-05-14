@@ -1,25 +1,25 @@
 
 App.TextField = Ember.TextField.extend({
-    classNames: ["ui-widget", "ui-state-default", "ui-corner-all"],
+    classNames: ["ui-widget", "ui-state-default", "ui-corner-all", "forminput"],
     didInsertElement: function() {
     }
 });
 App.LargeTextField = Ember.TextArea.extend({
-    classNames: ["ui-widget", "ui-state-default", "ui-corner-all"],
+    classNames: ["ui-widget", "ui-state-default", "ui-corner-all", "forminput"],
     didInsertElement: function() {
     }
 });
 App.Select = Ember.Select.extend({
-    classNames: ["ui-widget", "ui-state-default", "ui-corner-all"]
+    classNames: ["ui-widget", "ui-state-default", "ui-corner-all", "forminput"]
 });
 App.DateField = Ember.TextField.extend({
-    classNames: ["ui-widget", "ui-state-default", "ui-corner-all"],
+    classNames: ["ui-widget", "ui-state-default", "ui-corner-all", "forminput"],
     didInsertElement: function() {
         this.$().addClass("even").datepicker();
     }
 });
 App.Button = Ember.Button.extend({
-    classNames: ["ui-widget", "ui-state-default", "ui-corner-all"],
+    classNames: ["ui-widget", "ui-state-default", "ui-corner-all", "forminput"],
     didInsertElement: function() {
         this.$().addClass("even").button();
     }
@@ -35,11 +35,22 @@ App.ContentTypeSelectView = App.Select.extend({
 
 App.EntryListView = Ember.View.extend({
     entry: null,
+    classNames: ["ui-widget", "ui-state-default", "ui-corner-all", "forminput"],
     classNameBindings: ['isSelected'],
 
     click: function() {
       var entry = this.get('entry');
-      App.selectedEntryController.set('entry', entry);
+
+        // if we can load this and its not just loaded..
+      if ( entry.get('_hasID') && ! entry.set('_isFreshLoad') ) {
+        entry.addObserver('_isFreshLoad', function(){
+            App.selectedEntryController.set('entry', entry);
+        });
+        entry.load();
+      }
+      else {
+        App.selectedEntryController.set('entry', entry);
+      }
     },
     touchEnd: function() {
       this.click();
@@ -48,7 +59,9 @@ App.EntryListView = Ember.View.extend({
     isSelected: function() {
       var selectedItem = App.selectedEntryController.get('entry');
       var entry = this.get('entry');
+
       if (entry === selectedItem) { return true; }
+      return false;
     }.property('App.selectedEntryController.entry'),
 });
 
