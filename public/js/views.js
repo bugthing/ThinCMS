@@ -1,13 +1,36 @@
 
+App.TextField = Ember.TextField.extend({
+    classNames: ["ui-widget", "ui-state-default", "ui-corner-all"],
+    didInsertElement: function() {
+    }
+});
+App.LargeTextField = Ember.TextArea.extend({
+    classNames: ["ui-widget", "ui-state-default", "ui-corner-all"],
+    didInsertElement: function() {
+    }
+});
+App.Select = Ember.Select.extend({
+    classNames: ["ui-widget", "ui-state-default", "ui-corner-all"]
+});
+App.DateField = Ember.TextField.extend({
+    classNames: ["ui-widget", "ui-state-default", "ui-corner-all"],
+    didInsertElement: function() {
+        this.$().addClass("even").datepicker();
+    }
+});
 App.Button = Ember.Button.extend({
-    classNames: ["terminput", "termbutton"],
+    classNames: ["ui-widget", "ui-state-default", "ui-corner-all"],
+    didInsertElement: function() {
+        this.$().addClass("even").button();
+    }
 });
 
-App.ContentTypeSelectView = Ember.Select.extend({
-    contentBinding:	"App.contentTypeController",
-    selectionBinding:	"App.selectedContentTypeController.contentType",
-    optionLabelPath:	"content.name",
-    optionValuePath:	"content.id"
+
+App.ContentTypeSelectView = App.Select.extend({
+    contentBinding:	  "App.contentTypeController",
+    selectionBinding: "App.selectedContentTypeController.contentType",
+    optionLabelPath:  "content.name",
+    optionValuePath:  "content.id"
 });
 
 App.EntryListView = Ember.View.extend({

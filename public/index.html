@@ -11,19 +11,19 @@
   <title>ThinCMS</title>
   <meta name="description" content="A content management system as simple as its creator">
   <meta name="author" content="Benjamin Martin">
-
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <link rel="shortcut icon" href="./img/favicon.ico">
-  <link rel="apple-touch-icon" href="./img/apple-touch-icon.png">
-  <link rel="stylesheet" href="./css/style.css?v=2">
-  <link rel="stylesheet" href="./css/thincms-style.css">
+  <link rel="shortcut icon" href="./img/favicon.ico" />
+  <link rel="apple-touch-icon" href="./img/apple-touch-icon.png" />
+  <link rel="stylesheet" href="./css/style.css?v=2" />
+  <link rel="stylesheet" href="./css/thincms-style.css" />
+  <link rel="stylesheet" href="./js/libs/jquery-ui/jquery-ui-1.8.20-mintchoc.css" />
 
   <!--[if lt IE 9]>
   <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
   <![endif]-->
 
-  <!--HandleBar template -->
+  <!--HandleBar templates -->
 
 </head>
 <body>
@@ -35,10 +35,10 @@
 
 	<div id="thincms-container">
 	
-		<div id="entrys-list" class="termcontainer">
+        <div id="entrys-list" class="ui-widget-content ui-corner-all">
 
 			<script type="text/x-handlebars">
-			    {{view App.ContentTypeSelectView class="terminput"}}
+			    {{view App.ContentTypeSelectView }}
 			</script>
 	
 			<script type="text/x-handlebars">
@@ -62,14 +62,15 @@
 	
 		</div>
 
-		<div id="entry-detail" class="termcontainer">
+        <div id="entry-detail" class="ui-widget-content ui-corner-all">
 	
 		  	<script type="text/x-handlebars">
 		  	  	{{#if App.selectedEntryController.entry}}
                     {{#view App.EntryView}}
 
-		  	  	  		{{view Ember.TextField class="terminput" valueBinding="entry.title"}} 
-                        {{view Ember.TextArea  class="terminput" valueBinding="entry.content"}} 
+		  	  	  		{{view App.TextField      valueBinding="entry.title"   }} 
+		  	  	  		{{view App.DateField      valueBinding="entry.date"    }} 
+                        {{view App.LargeTextField valueBinding="entry.content" }} 
 
 		  	  	  		{{#view App.Button action="updateEntry" target="App.selectedEntryController" }} Update {{/view}}
 		  	  	  		{{#view App.Button action="deleteEntry" target="App.selectedEntryController" }} Delete {{/view}}
@@ -83,10 +84,14 @@
 	</div>
 
 	<script src="./js/libs/jquery-1.7.2.min.js"></script>
-	<script src="./js/libs/emberjs/ember.min.js"></script>
+	<script src="./js/libs/jquery-ui/jquery-ui-1.8.20.custom.min.js"></script>
+    <script src="./js/libs/emberjs/ember.min.js"></script>
+
+
 	<script src="./js/app.js"></script>
 	<script src="./js/models.js"></script>
 	<script src="./js/views.js"></script>
-	<script src="./js/controllers.js"></script>
+    <script src="./js/controllers.js"></script>
+
 </body>
 </html>

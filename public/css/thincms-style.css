@@ -42,7 +42,6 @@ body {
     top: 70px;
     bottom: 10px;
     padding: 10px;
-    border-radius: 12px;
 }
 
 #entrys-list{
@@ -76,15 +75,6 @@ li {
 }
 li:hover {
     background: #fff;
-}
-
-.termcontainer {
-	border: 3px solid #efefef;
-	display: block;
-	background-color: rgb(0,0,0);
-	background-color: rgba(0,0,0,0.7);
-	box-shadow: 0 10px 10px rgba(0,0,0,0.7);
-	border-radius: 3px;
 }
 
 .terminput {

@@ -29,6 +29,12 @@ Start
   wget http://code.jquery.com/jquery-1.7.2.min.js 
   mv jquery-1.7.2.min.js ./public/js/libs/
 
+# Get jQuery-UI - (used customer download build and chose mint choc theme)
+
+  wget http://jqueryui.com/download/jquery-ui-1.8.20.custom.zip 
+  mkdir -p ./public/js/libs/jquery-ui
+  mv jquery-1.7.2.min.zip ./public/js/libs/jquery-ui
+
 # Use CMS
 
   Go to this local url: file:///path/to/thincms/public/index.html
