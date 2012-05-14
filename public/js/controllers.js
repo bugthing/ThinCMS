@@ -4,7 +4,7 @@ App.contentTypeController = Ember.ArrayController.create({
         App.ContentType.create({id: 1, name: 'Blog'}),
         App.ContentType.create({id: 2, name: 'Events'}),
         App.ContentType.create({id: 3, name: 'Page'}) 
-    ] 
+    ],
 });
 
 App.selectedContentTypeController = Ember.Object.create({
