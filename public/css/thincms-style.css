@@ -54,6 +54,10 @@ ul {
     padding: 0px;
 }
 
+.is-not-saved {
+    border-color: red !important;
+    color: red !important;
+}
 .is-selected {
     background: #9bcc60 !important;
     color: #000 !important;

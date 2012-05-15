@@ -36,52 +36,60 @@
 
 	<div id="thincms-container">
 	
-        <div id="entrys-list" class="ui-widget-content ui-corner-all">
+        	<div id="entrys-list" class="ui-widget-content ui-corner-all">
 
-		<script type="text/x-handlebars">
-		    {{view App.ContentTypeSelectView }}
-		</script>
-	
-		<script type="text/x-handlebars" >
-	  	  	<ul>
-	  	  	  {{#each App.entrysController}}
-	  	  	      {{#view App.EntryListView entryBinding="this" classNames="ui-widget ui-state-default ui-corner-all forminput" tagName="li"}}
-			      	{{entry.title}}
-	  	  	      {{/view}}
-	  	  	  {{/each}}
-	  	  	</ul>
-			
-			{{#if App.entrysController.mcoll}}
-	  			{{#view App.Button target="App.entrysController" action="newEntry" }} New Entry {{/view}}
-	  	  	{{else}}
-				Please select a content type...	
-			{{/if}}
-	  	</script>
-	
-	</div>
-
-        <div id="entry-detail" class="ui-widget-content ui-corner-all">
-	
 			<script type="text/x-handlebars">
-				{{#if App.selectedEntryController.entry }}
-                    			{{#view App.EntryView}}
-		  	  	  		{{view App.TextField      valueBinding="entry.title"   }} 
-                        			{{view App.LargeTextField valueBinding="entry.content" }} 
-		  	  	  		{{#view App.Button action="updateEntry" target="App.selectedEntryController" }} Update {{/view}}
-		  	  	  		{{#view App.Button action="deleteEntry" target="App.selectedEntryController" }} Delete {{/view}}
-		  	  	  	{{/view}}
-		  	  	{{else}}
-                    			No content selected.
-		  	  	{{/if}}
+			    {{view App.ContentTypeSelectView }}
 			</script>
+		
+			<script type="text/x-handlebars" >
+		  	  	<ul>
+		  	  	  {{#each App.entrysController}}
+		  	  	      {{#view App.EntryListView entryBinding="this" classNames="ui-widget ui-state-default ui-corner-all forminput" tagName="li"}}
+				      		{{entry.title}}
+		  	  	      {{/view}}
+		  	  	  {{/each}}
+		  	  	</ul>
+				
+				{{#if App.entrysController.mcoll}}
+		  			{{#view App.Button target="App.entrysController" action="newEntry" }} New Entry {{/view}}
+		  	  	{{else}}
+					Please select a content type...	
+				{{/if}}
+		  	</script>
+		
+		</div>
 
+        	<div id="entry-detail" class="ui-widget-content ui-corner-all">
+		
+				<script type="text/x-handlebars">
+					{{#if App.selectedEntryController.entry }}
+						{{#view App.EntryView}}
+
+							{{#if entry._isFreshLoad }}
+								Saved	
+			  	  			{{else}}
+								NOT Saved	
+							{{/if}}
+
+			  	  	  		{{view App.TextField      valueBinding="entry.title"   }} 
+							{{view App.LargeTextField valueBinding="entry.content" }} 
+
+			  	  	  		{{#view App.Button action="updateEntry" target="App.selectedEntryController" }} Update {{/view}}
+			  	  	  		{{#view App.Button action="deleteEntry" target="App.selectedEntryController" }} Delete {{/view}}
+			  	  	  	{{/view}}
+			  	  	{{else}}
+        	            			No content selected.
+			  	  	{{/if}}
+				</script>
+
+			</div>
 		</div>
 	</div>
 
 	<script src="./js/libs/jquery-1.7.2.min.js"></script>
 	<script src="./js/libs/jquery-ui/jquery-ui-1.8.20.custom.min.js"></script>
     	<script src="./js/libs/emberjs/ember.min.js"></script>
-
 
 	<script src="./js/app.js"></script>
 	<script src="./js/models.js"></script>

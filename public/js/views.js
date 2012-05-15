@@ -42,7 +42,7 @@ App.EntryListView = Ember.View.extend({
       var entry = this.get('entry');
 
         // if we can load this and its not just loaded..
-      if ( entry.get('_hasID') && ! entry.set('_isFreshLoad') ) {
+      if ( entry.get('_hasID') && ! entry.get('_isFreshLoad') ) {
         entry.addObserver('_isFreshLoad', function(){
             App.selectedEntryController.set('entry', entry);
         });
@@ -63,6 +63,7 @@ App.EntryListView = Ember.View.extend({
       if (entry === selectedItem) { return true; }
       return false;
     }.property('App.selectedEntryController.entry'),
+
 });
 
 App.EntryView = Ember.View.extend({

@@ -22,6 +22,8 @@ App.MongoDoc = Ember.Object.extend({
                         var f = flds[i];
                         if ( typeof(data[f]) !== 'undefined' ) {
                             self.set( f, data[f] );
+                            // add observer on to object field to set '_isFreshLoad'..
+                            self.addObserver( f, function(){ self.set( '_isFreshLoad', false ) } );
                         }
                     }
                     Ember.endPropertyChanges(self);
@@ -62,7 +64,7 @@ App.MongoDoc = Ember.Object.extend({
                     var id;
                     for(var key in data["_id"] ){ id = data["_id"][key]; }
                     self.set('id', id);
-                    alert('saved:' + id );
+                    self.set( '_isFreshLoad', true );
                 }
             },
             error: function() {
@@ -83,10 +85,7 @@ App.MongoDoc = Ember.Object.extend({
             contentType: 'application/json',
             processData: false,
             success: function(data) {
-                if ( data.ok == 1 ) {
-                    self.set('id', null);
-                    alert('deleted');
-                }
+                if ( data.ok == 1 ) self.set('id', null);
             },
             error: function() {
                 alert('Could not delete entry');
