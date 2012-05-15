@@ -20,11 +20,8 @@ App.MongoDoc = Ember.Object.extend({
                     var flds = self.get('fields');
                     for(var i=0; i< flds.length; i++) {
                         var f = flds[i];
-                        if ( typeof(data[f]) !== 'undefined' ) {
-                            self.set( f, data[f] );
-                            // add observer on to object field to set '_isFreshLoad'..
-                            self.addObserver( f, function(){ self.set( '_isFreshLoad', false ) } );
-                        }
+                        self.set( f, data[f] );
+                        self.addObserver( f, function(){ self.set( '_isFreshLoad', false ) } );
                     }
                     Ember.endPropertyChanges(self);
                     self.set( '_isFreshLoad', true );
@@ -44,7 +41,7 @@ App.MongoDoc = Ember.Object.extend({
         var type = 'POST';
         if ( this.get('_hasID') ) type = 'PUT';
 
-        var flds = ['title', 'content'];
+        var flds = this.get('fields');
         var data = {};
         for(var i=0; i< flds.length; i++) {
             var f = flds[i];
@@ -106,14 +103,58 @@ App.MongoDoc = Ember.Object.extend({
     }.property()
 });
 
-App.Entry = App.MongoDoc.extend({
-    fields: ['title', 'content'],
-    title: "New Entry",
-    content: "Some new content",
-});
+App.Entry = App.MongoDoc.extend({ title: "New Entry" });
+
 
 App.ContentType = Ember.Object.extend({
     id: Ember.required(),
-    name: Ember.required()
+    name: Ember.required(),
+    cfg: { elements: {} }, // cfg: { elements: { 'title': {type: 'Text'}, 'content': {type: 'LargeText'} } }
+
+    mcoll: function() {
+        return this.get('name');
+    }.property('name'),
+
+    elements: function() {
+        return this.get('cfg').elements;
+    }.property('cfg'),
+
+    fields: function() {
+        var flds = new Array();
+        var elements = this.get('elements');
+        for(var i=0; i < elements.length; i++ ) {
+            var n = elements[i].name;
+            flds.push(n);
+        }
+        return flds;
+    }.property('cfg'),
+
+
+    rows: [],
+    fetchRows : function() {
+        var mcoll = this.get('mcoll');
+        var self = this;
+        $.ajax({
+            url: '/mongodb/' + App.get('mdb') + '/' + mcoll,
+            dataType: 'json',
+            success: function(data) {
+                var rows = new Array();
+                for( var i=0; i<data.rows.length; i++ ) {
+                    var row = data.rows[i];
+
+                    var id;
+                    for(var key in row["_id"] ){ id = row["_id"][key]; }
+                    rows.push({
+                        "id": id,
+                        title: row["title"]
+                    });
+                }
+                self.set('rows', rows);
+            },
+            error: function() {
+                alert('Could not load entrys');
+            }
+        });
+    }
 });
 

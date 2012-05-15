@@ -25,6 +25,13 @@
   <![endif]-->
 
   <!--HandleBar templates -->
+<script type="text/x-handlebars" data-template-name="text-element">
+    I'm a row of type "foo" - {{element}}
+</script>
+<script type="text/x-handlebars" data-template-name="largetext-element">
+    I'm a row of type "bar" - {{element}}
+</script>
+
 
 </head>
 <body>
@@ -51,7 +58,7 @@
 		  	  	  {{/each}}
 		  	  	</ul>
 				
-				{{#if App.entrysController.mcoll}}
+				{{#if App.entrysController.contentType}}
 		  			{{#view App.Button target="App.entrysController" action="newEntry" }} New Entry {{/view}}
 		  	  	{{else}}
 					Please select a content type...	
@@ -64,6 +71,7 @@
 		
 				<script type="text/x-handlebars">
 					{{#if App.selectedEntryController.entry }}
+
 						{{#view App.EntryView}}
 
 							{{#if entry._isFreshLoad }}
@@ -72,10 +80,11 @@
 								NOT Saved	
 							{{/if}}
 
-			  	  	  		{{view App.TextField      valueBinding="entry.title"   }} 
-							{{view App.LargeTextField valueBinding="entry.content" }} 
+    							{{#each App.selectedEntryController.elementViews}}
+			  	  				{{view this }}
+    							{{/each}}
 
-			  	  	  		{{#view App.Button action="updateEntry" target="App.selectedEntryController" }} Update {{/view}}
+			  	  	  		{{#view App.Button action="updateEntry" target="App.selectedEntryController" }} Save {{/view}}
 			  	  	  		{{#view App.Button action="deleteEntry" target="App.selectedEntryController" }} Delete {{/view}}
 			  	  	  	{{/view}}
 			  	  	{{else}}
