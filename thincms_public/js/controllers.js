@@ -81,7 +81,7 @@ App.entrysController = Ember.ArrayController.create({
     },
     newEntry: function() {
         this.pushObject( App.Entry.create({ 
-            contentType: self.get('contentType'),
+            contentType: this.get('contentType'),
         }));
     },
     removeEntry: function(entry) {
