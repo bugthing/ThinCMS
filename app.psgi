@@ -23,10 +23,12 @@ use Plack::Middleware::MongoDB;
 my $mdb_host   = "localhost";
 my $mdb_port   = 27017;
 my $mdb_dbname = "testdb"; # for use with non-api mongodb calls
+my $mdb_conn   = MongoDB::Connection->new(host => $mdb_host, port => $mdb_port);
 
 # ..plack related..
 my $root       = "$Bin/public/";
 my $admin_root = "$Bin/thincms_public/";
+
 
 =head2 Plack Builder
 
@@ -44,7 +46,7 @@ builder {
         enable "Plack::Middleware::Auth::Basic", authenticator => \&authen_thincms;
 
         # MongoDB backed REST API used by the static front end.
-        mount "/mongodb" => Plack::Middleware::MongoDB->new(host => $mdb_host, port => $mdb_port),
+        mount "/mongodb" => Plack::Middleware::MongoDB->new(mongodb => $mdb_conn),
 
         # static files make up the whole thincms front end
         mount "/" => builder { enable 'Plack::Middleware::StaticWithDefault', root => $admin_root, path => qr/.*/; };
@@ -61,12 +63,18 @@ builder {
         # here I should parse the requested path a try to determin any requested
         # MongoDB doc and/or doc-list. TBA
 
+        my $mdb = $mdb_conn->$mdb_dbname;
+
         my $doc  = {};
         my $list = [];
  
         enable 'TemplateToolkit',
             INCLUDE_PATH => $root, 
-            vars => { doc => $doc, list => $list },
+            vars => { 
+                mdb => $mdb,
+                doc => $doc, 
+                list => $list ,
+            },
     };
 
 };

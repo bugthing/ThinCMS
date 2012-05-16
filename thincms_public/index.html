@@ -91,7 +91,10 @@
 	<script src="./js/libs/jquery-ui/jquery-ui-1.8.20.custom.min.js"></script>
    	<script src="./js/libs/emberjs/ember.min.js"></script>
 
-	<script src="./js/app.js"></script>
+    <!-- EmberJS Application -->
+    <script>
+        var App = Em.Application.create({ mdb: 'testdb' });
+    </script>
 	<script src="./js/models.js"></script>
 	<script src="./js/views.js"></script>
    	<script src="./js/controllers.js"></script>

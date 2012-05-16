@@ -17,7 +17,9 @@ sub prepare_app {
     $self->port(27017)       unless $self->port();
 
     # create MongoDB connection
-    $self->mongodb( MongoDB::Connection->new(host => $self->host(), port => $self->port()) );
+    unless ( $self->mongodb() ) {
+        $self->mongodb( MongoDB::Connection->new(host => $self->host(), port => $self->port()) );
+    }
 
     # create JSON encoder
     $self->json( JSON::XS->new->ascii->pretty->allow_nonref );
@@ -51,7 +53,7 @@ sub _handle {
 
     my $content;
 
-    if ( $self->_process_mongo_request( $path, $vars, \$content ) ) {
+    if ( $self->_process_mongo_api_request( $path, $vars, \$content ) ) {
         return [
             '200', [ 'Content-Type' => 'application/json' ],
             [$content]
@@ -65,7 +67,7 @@ sub _handle {
     }
 }
 
-sub _process_mongo_request {
+sub _process_mongo_api_request {
     my ( $self, $path, $vars, $content_ref ) = @_;
 
     my $connection = $self->mongodb();
@@ -197,8 +199,7 @@ sub _process_mongo_request {
     $$content_ref = $self->json()->encode( $json );
 
     return 1;
-
 }
 
+##
 1;
-

@@ -69,8 +69,7 @@ App.entrysController = Ember.ArrayController.create({
             for( var i=0; i<rows.length; i++ ) {
                 var row = rows[i];
 	            var entry = App.Entry.create({ 
-                    mcoll: self.get('contentType').get('mcoll'),
-                    fields: self.get('contentType').get('fields'),
+                    contentType: self.get('contentType'),
                     id: row["id"],
                     title: row["title"]
                 });
@@ -82,9 +81,8 @@ App.entrysController = Ember.ArrayController.create({
     },
     newEntry: function() {
         this.pushObject( App.Entry.create({ 
-            mcoll: this.get('contentType').get('mcoll'),
-            fields: this.get('contentType').get('fields')
-        }) )
+            contentType: self.get('contentType'),
+        }));
     },
     removeEntry: function(entry) {
         this.removeObject(entry);
@@ -152,4 +150,3 @@ App.selectedEntryController = Ember.Object.create({
     }.property('entry')
 
 });
-

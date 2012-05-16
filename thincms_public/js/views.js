@@ -1,6 +1,4 @@
 
-
-
 App.TextField = Ember.TextField.extend({
     classNames: ["ui-widget", "ui-state-default", "ui-corner-all", "forminput"],
     didInsertElement: function() {
@@ -26,10 +24,6 @@ App.Button = Ember.Button.extend({
         this.$().button();
     }
 });
-
-
-
-
 
 
 /* 

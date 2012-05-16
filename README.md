@@ -5,8 +5,8 @@ Thin CMS
 A Simple JS based CMS that stores data in MongoDB.
 
 This idea behind this project to create a simple and quick-to-setup CMS system
-that will allow the use to build documents in MongoDB which can then be pulled
-back to construce the pages for a bespoke site.
+that will allow the user to build documents in MongoDB which can then be pulled
+into an HTML page and displayed
 
 Start
 -----
@@ -35,15 +35,17 @@ Start
   mkdir -p ./public/js/libs/jquery-ui
   mv jquery-1.7.2.min.zip ./public/js/libs/jquery-ui
 
-# Use CMS
+# Start the application
 
-  Go to this local url: file:///path/to/thincms/public/index.html
-  Create pages, containers and more to your preferences
+  MongoDB --rest API can only handle 'GET' requests, therefore there
+  is a Plack::Middleware in place to GET,POST,PUT and DEL docuements
+  to/from the mongo db store.  With that in mind, start the plack app:
+    plackup 
+  Then visit: http://0:5000/thincms/
 
 # View your new site
 
   Not yet finalised, but probably something along the lines of setting up a 
-
   Perl Web server to server up pages build from MongoDB.
 
 
@@ -53,7 +55,7 @@ Admin Notes
 # Get MongoDB
   http://fastdl.mongodb.org/linux/mongodb-linux-i686-2.0.4.tgz
   # Start MongoDB
-  mongod --rest --dbpath=$DBPATH
+  mongod --dbpath=$DBPATH
 
 # RVM - Ruby (for emberjs build)
   https://rvm.beginrescueend.com/
@@ -74,3 +76,4 @@ Dev Notes
 
 ## Update a document (should work, by currently does not!)
   curl -i -H "Accept: application/json" -X PUT -d "{firstName: 'ben', lastName: 'netanyaho'}" http://127.0.0.1:28017/testdb/testcoll/4f745fea8e234dad19615026
+

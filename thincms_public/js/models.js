@@ -1,9 +1,24 @@
 
+/*
+ * MongoDoc knows how to load/save docs from MongoDB api.
+ */
 App.MongoDoc = Ember.Object.extend({
 
-    mcoll: Ember.required(),    // name of mongo collection to use.
-    id: Ember.required(),       // id of the mongo document.
-    fields: Ember.required(),   // list of fields saved and loaded.
+    id: Ember.required(), // id of the mongo document.
+
+    contentType: Ember.required(), // object that holds meta data about the Doc
+
+    mdb: function(){    // name of mongo database to use.
+        return this.get('contentType').get('mdb');
+    }.property('contentType'),
+
+    mcoll: function(){  // name of mongo collection to use.
+        return this.get('contentType').get('mcoll');
+    }.property('contentType'),
+
+    fields: function(){ // fields to load/save
+        return this.get('contentType').get('fields');
+    }.property('contentType'),
     
     load: function(){
         var id = this.get('id');
@@ -100,7 +115,7 @@ App.MongoDoc = Ember.Object.extend({
         return false;
     }.property(),
     _URL: function() {
-        var url = 'mongodb/' + App.get('mdb') + '/' + this.get('mcoll');
+        var url = 'mongodb/' + this.get('mdb') + '/' + this.get('mcoll');
         if ( this.get('_hasID') ) url = url + '/' + this.get('id');
         return url;
     }.property()
@@ -109,12 +124,15 @@ App.MongoDoc = Ember.Object.extend({
 App.Entry = App.MongoDoc.extend({ title: "New Entry" });
 
 App.ContentType = Ember.Object.extend({
-    name: Ember.required(), 
-    cfg: { elements: {} }, // cfg: { elements: { 'title': {type: 'Text'}, 'content': {type: 'LargeText'} } }
+    name: Ember.required(), // name of content type (used for collection)
+    cfg: { elements: {} },  // eg. "cfg: { elements: { 'title': {type: 'Text'}, 'content': {type: 'LargeText'} } }"
 
     // these are dynamicly generated propertys and a used as helper methods when 
     // constructing MongoDoc based objects (see above)
 
+    mdb: function() {
+        return App.get('mdb');
+    }.property('name'),
     mcoll: function() {
         return this.get('name');
     }.property('name'),
@@ -132,7 +150,6 @@ App.ContentType = Ember.Object.extend({
         }
         return flds;
     }.property('cfg'),
-
 
     // rows are obtained from the server, this property and function
     // fetches the rows and fills out the array.

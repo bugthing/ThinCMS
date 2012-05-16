@@ -16,16 +16,28 @@
     available
 </p>
 
-[% IF doc %]
-    [% doc  %] 
-[% END  %] 
+<p>
+	[% mdb.Blog.find().all() %] 
+	<ul>
+	[% FOREACH item IN mdb.Blog.find().all() %] 
+	    <li>
+	        [% item.title %] - [% item.date %]
+	    </li>
+	[% END  %] 
+	</ul>
+</p>
 
-[% IF list %]
-    <ul>
-    [% FOREACH item IN list  %] 
-        <li>
-            [% item %]
-        </li>
-    [% END  %] 
-    </ul>
-[% END  %] 
+<p>
+	[% doc %] 
+</p>
+
+<p>
+	[% list %]
+	<ul>
+	[% FOREACH item IN list  %] 
+	    <li>
+	        [% item %]
+	    </li>
+	[% END  %] 
+	</ul>
+</p>
