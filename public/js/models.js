@@ -1,8 +1,9 @@
 
 App.MongoDoc = Ember.Object.extend({
 
-    mcoll: Ember.required(),
-    fields: Ember.required(),
+    mcoll: Ember.required(),    // name of mongo collection to use.
+    id: Ember.required(),       // id of the mongo document.
+    fields: Ember.required(),   // list of fields saved and loaded.
     
     load: function(){
         var id = this.get('id');
@@ -90,6 +91,8 @@ App.MongoDoc = Ember.Object.extend({
         });
     },
 
+    // internally used properties
+
     _isFreshLoad: false,
     _hasID: function() {
         var id = this.get('id');
@@ -105,11 +108,12 @@ App.MongoDoc = Ember.Object.extend({
 
 App.Entry = App.MongoDoc.extend({ title: "New Entry" });
 
-
 App.ContentType = Ember.Object.extend({
-    id: Ember.required(),
-    name: Ember.required(),
+    name: Ember.required(), 
     cfg: { elements: {} }, // cfg: { elements: { 'title': {type: 'Text'}, 'content': {type: 'LargeText'} } }
+
+    // these are dynamicly generated propertys and a used as helper methods when 
+    // constructing MongoDoc based objects (see above)
 
     mcoll: function() {
         return this.get('name');
@@ -129,6 +133,9 @@ App.ContentType = Ember.Object.extend({
         return flds;
     }.property('cfg'),
 
+
+    // rows are obtained from the server, this property and function
+    // fetches the rows and fills out the array.
 
     rows: [],
     fetchRows : function() {

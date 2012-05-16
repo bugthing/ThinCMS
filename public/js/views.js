@@ -35,18 +35,18 @@ App.Button = Ember.Button.extend({
 /* 
  * ContentTypeSelectView - Drop down of content types.
  *   Inherits from Ember.Select and uses 2 controllers
-*/
+ */
 App.ContentTypeSelectView = App.Select.extend({
     contentBinding:	  "App.contentTypeController",                      // source of options
     selectionBinding: "App.selectedContentTypeController.contentType",  // set when selected
     optionLabelPath:  "content.name",                                   // label
-    optionValuePath:  "content.id"                                      // value
+    optionValuePath:  "content.name"                                    // value
 });
 
 /* 
  * EntryListView - List Entry's, called mutliple times
  *   When clicked tells App.selectedEntryController to select the entry.
-*/
+ */
 App.EntryListView = Ember.View.extend({
     entry: null,
     classNames: ["ui-widget", "ui-state-default", "ui-corner-all", "forminput"],
@@ -64,9 +64,11 @@ App.EntryListView = Ember.View.extend({
       if (entry === selectedItem) { return true; }
       return false;
     }.property('App.selectedEntryController.entry'),
-
 });
 
+/* 
+ * This view handles the display of the selected Entry
+ */
 App.EntryView = Ember.View.extend({
     entryBinding: 'App.selectedEntryController.entry',
 });

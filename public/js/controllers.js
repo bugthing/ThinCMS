@@ -1,8 +1,11 @@
 
+/*
+ * This controllers builds and holds ContentType objects.
+ */
 App.contentTypeController = Ember.ArrayController.create({
     content: [ Ember.Object.create({ id: 0, name:'-- please select --'}),
         App.ContentType.create({
-            id: 1, name: 'Blog',
+            name: 'Blog',
             fields: ['title','content','date'],
             cfg: { elements: { 
                 'title': {type: 'Text'}, 
@@ -11,18 +14,22 @@ App.contentTypeController = Ember.ArrayController.create({
             } }
         }),
         App.ContentType.create({
-            id: 2, name: 'Events',
+            name: 'Events',
             fields: ['title','content'],
             cfg: { elements: { 'title': {type: 'Text'}, 'content': {type: 'LargeText'} } }
         }),
         App.ContentType.create({
-            id: 3, name: 'Page',
+            name: 'Page',
             fields: ['title','content'],
             cfg: { elements: { 'title': {type: 'Text'}, 'content': {type: 'LargeText'} } }
         }) 
     ],
 });
 
+/*
+ * This controller holds the selected ContentType object and fires when 
+ * ContentType is changed..
+ */
 App.selectedContentTypeController = Ember.Object.create({
     contentType: null,
     changedSelection: function() {
@@ -31,6 +38,9 @@ App.selectedContentTypeController = Ember.Object.create({
     }.observes('contentType')
 });
 
+/*
+ * This controller holds the list of Entry's that is of the selected ContentType.
+ */
 App.entrysController = Ember.ArrayController.create({
     content: [],
 
@@ -69,8 +79,6 @@ App.entrysController = Ember.ArrayController.create({
             self.set('content', entrys);
         });
         this.get('contentType').fetchRows();
-
-
     },
     newEntry: function() {
         this.pushObject( App.Entry.create({ 
@@ -83,6 +91,9 @@ App.entrysController = Ember.ArrayController.create({
     }
 });
 
+/*
+ * This controller looks after the selected entry from the list 
+ */
 App.selectedEntryController = Ember.Object.create({
     entry: Ember.required(),
 
@@ -141,3 +152,4 @@ App.selectedEntryController = Ember.Object.create({
     }.property('entry')
 
 });
+
