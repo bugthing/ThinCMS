@@ -100,7 +100,7 @@ App.MongoDoc = Ember.Object.extend({
         return false;
     }.property(),
     _URL: function() {
-        var url = '/mongodb/' + App.get('mdb') + '/' + this.get('mcoll');
+        var url = 'mongodb/' + App.get('mdb') + '/' + this.get('mcoll');
         if ( this.get('_hasID') ) url = url + '/' + this.get('id');
         return url;
     }.property()
@@ -142,7 +142,7 @@ App.ContentType = Ember.Object.extend({
         var mcoll = this.get('mcoll');
         var self = this;
         $.ajax({
-            url: '/mongodb/' + App.get('mdb') + '/' + mcoll,
+            url: 'mongodb/' + App.get('mdb') + '/' + mcoll,
             dataType: 'json',
             success: function(data) {
                 var rows = new Array();
