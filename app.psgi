@@ -9,49 +9,52 @@ Runs the ThinCMS application via Plack (plackup)
 
 =cut
 
-use Plack::Builder;
 use FindBin qw($Bin);
 use lib "$Bin/lib";
 
+use Plack::Builder;
 use Plack::Middleware::Auth::Basic;
-use Plack::Middleware::ErrorDocument;
-use Plack::Middleware::Static;
+use Plack::Middleware::StaticWithDefault;
 use Plack::Middleware::MongoDB;
 
-my $root = "$Bin/public/";
-$admin_root = "$Bin/thincms_public/";
+# Important vars
 
-=head2 builder
+# ..mongodb related..
+my $mdb_host   = "localhost";
+my $mdb_port   = 27017;
+my $mdb_dbname = "testdb"; # for use with non-api mongodb calls
 
-Constructs the Plack Application
+# ..plack related..
+my $root       = "$Bin/public/";
+my $admin_root = "$Bin/thincms_public/";
+
+=head2 Plack Builder
+
+This is the Plack builder that constructs the paths and middleware used
+to serve a ThinCMS based website.
 
 =cut
  
 builder {
 
-    # standard 404 handler
-    enable 'ErrorDocument', 404 => "$root/page_not_found.html";
-
     # mount point for the ThinCMS admin system.
     mount "/thincms" => builder {
 
-        # force authentication on any requests to the thincms front end
-        enable "Auth::Basic", authenticator => \&authen_thincms;
+        # force authentication on any requests to anything in this mount.
+        enable "Plack::Middleware::Auth::Basic", authenticator => \&authen_thincms;
 
-        # REST API used by the static front end.
-        mount "/mongodb" => Plack::Middleware::MongoDB->new(host => 'localhost', port => 27017),
+        # MongoDB backed REST API used by the static front end.
+        mount "/mongodb" => Plack::Middleware::MongoDB->new(host => $mdb_host, port => $mdb_port),
 
-        # static files that make up the thincms front end
-        enable 'Static', 
-            root => $admin_root, 
-            path => qr{\.(gif|png|jpg|swf|ico|mov|mp3|pdf|js|css|html|htm)$},
-
-    },
+        # static files make up the whole thincms front end
+        mount "/" => builder { enable 'Plack::Middleware::StaticWithDefault', root => $admin_root, path => qr/.*/; };
+    };
 
     # mount point for the standard TT based site
     mount "/" => builder {
 
-        enable 'Static',
+        # stuff to serve up as static content (images, css, etc.)
+        enable 'Plack::Middleware::StaticWithDefault',
             path => qr{\.(gif|png|jpg|swf|ico|mov|mp3|pdf|js|css)$},
             root => $root,
 
