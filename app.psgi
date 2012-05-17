@@ -13,9 +13,14 @@ use FindBin qw($Bin);
 use lib "$Bin/lib";
 
 use Plack::Builder;
-use Plack::Middleware::Auth::Basic;
-use Plack::Middleware::StaticWithDefault;
+
+use MongoDB;
 use Plack::Middleware::MongoDB;
+
+#use Plack::Middleware::Auth::Basic;
+#use Plack::Middleware::StaticWithDefault;
+#use Plack::Middleware::MongoDB;
+#use Plack::Middleware::Config;
 
 # Important vars
 
@@ -38,7 +43,9 @@ to serve a ThinCMS based website.
  
 builder {
 
-    # TBA - need middleware to load in config!
+    # load config into the env (key: 'cfg.cfg')
+    enable 'Plack::Middleware::Config', stems => ['/home/bmartin/dev/scratch/ThinCMS/config'];
+
     # TBA - need to parse domain and configure accordingly
 
     # mount point for the ThinCMS admin system.
@@ -54,8 +61,34 @@ builder {
         mount "/" => builder { enable 'Plack::Middleware::StaticWithDefault', root => $admin_root, path => qr/.*/; };
     };
 
-    # mount point for the standard TT based site
+    # mount point for the 'webs' - TT based sites
     mount "/" => builder {
+
+        # load the appropreate config for this domain..
+        enable sub {
+            my $app = shift;
+            sub {
+                my $env = shift;
+
+                my ($cfg) =  values %{ $env->{'cfg.cfg'} };
+
+                # have a look in the config for 'webs', match and configure..
+                foreach my $web ( @{ $cfg->{'webs'} } ) {
+
+                    if ( $web->{default} ) {
+                        $root = $web->{root};
+                        $mdb_dbname = $web->{mongodb_name};
+                    }
+
+                    # TBA - match config based on hostname..
+                    if ( $web->{host} ) { 
+                    }
+                }
+print STDERR "\n\n USING: $root - $mdb_dbname \n";
+                my $res = $app->($env);
+                return $res;
+            };
+        };
 
         # stuff to serve up as static content (images, css, etc.)
         enable 'Plack::Middleware::StaticWithDefault',
@@ -65,17 +98,18 @@ builder {
         # here I should parse the requested path a try to determin any requested
         # MongoDB doc and/or doc-list. TBA
 
-        my $mdb = $mdb_conn->$mdb_dbname;
 
         my $doc  = {};
         my $list = [];
  
         enable 'TemplateToolkit',
             INCLUDE_PATH => $root, 
-            vars => { 
-                mdb => $mdb,
-                doc => $doc, 
-                list => $list ,
+            vars => sub {
+                return { 
+                    mdb  => $mdb_conn->$mdb_dbname,
+                    doc  => $doc, 
+                    list => $list ,
+                }
             },
     };
 

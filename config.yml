@@ -1,10 +1,17 @@
-webs:
-  - jenbrister:
-    root: "/home/benjamin/dev/github/ThinCMS/webs/jenbrister"
-    host: "jenbrister.co.uk"
-  - robertdancer:
-    root: "/home/benjamin/dev/github/ThinCMS/webs/robertdancer"
-    host: "jenbrister.co.uk"
+
 mongodb:
     host: localhost
     port: 27017
+
+webs:
+
+  - host: "jenbrister.co.uk"
+    root: "/home/benjamin/dev/github/ThinCMS/webs/jenbrister"
+    default: 1
+    mongodb_name: "testdb"
+
+  - robertdancer:
+    root: "/home/benjamin/dev/github/ThinCMS/webs/robertdancer"
+    host: "robertdancer.co.uk"
+    mongodb_name: "robertdancer"
+
