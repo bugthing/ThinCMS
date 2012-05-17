@@ -29,7 +29,6 @@ my $mdb_conn   = MongoDB::Connection->new(host => $mdb_host, port => $mdb_port);
 my $root       = "$Bin/public/";
 my $admin_root = "$Bin/thincms_public/";
 
-
 =head2 Plack Builder
 
 This is the Plack builder that constructs the paths and middleware used
@@ -38,6 +37,9 @@ to serve a ThinCMS based website.
 =cut
  
 builder {
+
+    # TBA - need middleware to load in config!
+    # TBA - need to parse domain and configure accordingly
 
     # mount point for the ThinCMS admin system.
     mount "/thincms" => builder {
@@ -89,3 +91,5 @@ sub authen_thincms {
     my( $username, $password ) = @_;
     return $username eq 'admin' && $password eq 'password';
 }
+
+

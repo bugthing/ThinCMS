@@ -1,0 +1,10 @@
+webs:
+  - jenbrister:
+    root: "/home/benjamin/dev/github/ThinCMS/webs/jenbrister"
+    host: "jenbrister.co.uk"
+  - robertdancer:
+    root: "/home/benjamin/dev/github/ThinCMS/webs/robertdancer"
+    host: "jenbrister.co.uk"
+mongodb:
+    host: localhost
+    port: 27017
