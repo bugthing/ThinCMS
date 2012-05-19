@@ -26,10 +26,13 @@
 
 </head>
 <body>
+    <div id="page-background">
+        <img src="./img/GrassBlades.jpg" class="stretch" alt="" />
+    </div>
 
     <header class="thincms-header">
         	<h1>ThinCMS</h1>
-        	<p>Simple web site alterations</p>
+        	<p>Simple web site alterations ([% mongodb_name %])</p>
     </header>
 
 	<div id="thincms-container">
@@ -93,7 +96,7 @@
 
     <!-- EmberJS Application -->
     <script>
-        var App = Em.Application.create({ mdb: 'testdb' });
+        var App = Em.Application.create({ mdb: '[% mongodb_name %]' });
     </script>
 	<script src="./js/models.js"></script>
 	<script src="./js/views.js"></script>

@@ -6,9 +6,13 @@ mongodb:
 webs:
 
   - host: "jenbrister.co.uk"
-    root: "/home/benjamin/dev/github/ThinCMS/webs/jenbrister"
+    root: "/home/benjamin/dev/github/ThinCMS/webs/demo"
     default: 1
     mongodb_name: "testdb"
+
+  - host: "jenbrister.co.uk"
+    root: "/home/benjamin/dev/github/ThinCMS/webs/jenbrister"
+    mongodb_name: "jenbrister"
 
   - robertdancer:
     root: "/home/benjamin/dev/github/ThinCMS/webs/robertdancer"

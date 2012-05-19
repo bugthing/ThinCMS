@@ -22,6 +22,11 @@ App.contentTypeController = Ember.ArrayController.create({
             name: 'Page',
             fields: ['title','content'],
             cfg: { elements: { 'title': {type: 'Text'}, 'content': {type: 'LargeText'} } }
+        }) ,
+        App.ContentType.create({
+            name: 'Dan',
+            fields: ['title','date'],
+            cfg: { elements: { 'title': {type: 'Text'}, 'date': {type: 'Date'} } }
         }) 
     ],
 });
