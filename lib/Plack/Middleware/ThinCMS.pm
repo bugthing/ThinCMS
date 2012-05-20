@@ -17,7 +17,7 @@ use MongoDB;
 use Template;
 use MongoAPI;
 
-use Plack::Util::Accessor qw/cfg_file cfg mongodb json/;
+use Plack::Util::Accessor qw/cfg_file cfg mongodb json req/;
 
 sub prepare_app {
     my ($self) = @_;
@@ -44,6 +44,9 @@ sub call {
     my $self = shift;
     my $env  = shift;
 
+    # set request in object..
+    $self->req( Plack::Request->new($env) );
+
     $self->_set_config( $env );
 
     my $res;
@@ -68,13 +71,20 @@ sub _set_config{
     my ( $env ) = @_;
 
     my $cfg = $self->cfg();
+    my $req = $self->req();
 
     # look in the config for 'webs', match and store.
     my $web = {};
     foreach ( @{ $cfg->{'webs'} } ) {
         $web = $_ if ( $_->{default} );
+
         # TBA - match config based on hostname..
-        if ( $web->{host} ) {
+        my $search_string = $req->uri->host;
+        my $match_string  = quotemeta( $_->{host} );
+
+        if ($search_string =~ /$match_string/) {
+            $web = $_;
+            last;
         }
     }
 
@@ -154,7 +164,7 @@ sub _handle_tt {
     my $env = shift;
 
     my ($code, $type, $content);
-    my $req = Plack::Request->new($env);
+    my $req = $self->req();
     eval { 
         $self->_process_tt( $env, \$type, \$content );
     };
@@ -216,7 +226,7 @@ sub _process_mongo_api_request {
     my ( $self, $env, $type_ref, $content_ref ) = @_;
 
     my $json_obj = $self->json();
-    my $req = Plack::Request->new($env);
+    my $req = $self->req();
 
     my $data = $req->content;
     if ( $data ) {
