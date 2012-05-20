@@ -21,16 +21,35 @@ use ThinCMS::MongoAPI;
 
 use Plack::Util::Accessor qw/cfg_file cfg mongodb json req/;
 
+=head1 NAME
+
+Plack::Middleware::ThinCMS - Handles 
+
+=head1 DESCRIPTION
+
+A little bit of L<Plack::Middleware> that does the server side stuff to 
+serve a ThinCMS based site.
+
+=head2 PLACK HOOKS
+
+=over
+
+=item prepare_app
+
+This is called when a Plack based app starts up.
+
+=cut
+
 sub prepare_app {
     my ($self) = @_;
 
-    # load config
+    # load config file
     $self->cfg_file( $FindBin::Bin . '/config.yml');
     my $cfg = Config::Any->load_files( { files => [ $self->cfg_file() ], use_ext => 1, flatten_to_hash => 1 } );
     ($cfg) =  values %{ $cfg };
     $self->cfg( $cfg );
 
-    # connect to mongo
+    # connect to mongo 
     my $host = $cfg->{mongodb}->{host};
     my $port = $cfg->{mongodb}->{port};
     $self->mongodb( MongoDB::Connection->new(host => $host, port => $port) );
@@ -41,6 +60,12 @@ sub prepare_app {
     $self->json( $json_obj );
 
 }
+
+=item call
+
+This is called on every http request.
+
+=cut
 
 sub call {
     my $self = shift;
@@ -67,6 +92,31 @@ sub call {
 
     return $self->app->($env);
 }
+
+=back
+
+=head2 PRIVATE METHODS
+
+=over
+
+=item _set_config
+
+Reads the config and pokes things into the $env for this perticular request domain and path
+
+Most importantly it sets:
+  tt.root - path to load files from (either static or tt based)
+  tt.vars - hash ref passed to tt when processing templates
+              - sets ->{thincms} key within hash, this has the value of appropreate
+                 'web:' section of config.
+              - sets ->{cmd} key within hash, this is the appropreate mongo database object
+
+.. if this is determined to be a thincms request:
+  thincmscfg - hashref of whole configuration file
+  tt.root    - this changed to point the thincms_public dir
+  tt.vars    - 
+                 - sets ->{mongodb_name} sets the dbname this thincms session should use
+
+=cut
 
 sub _set_config{
     my $self = shift;
@@ -106,6 +156,11 @@ sub _set_config{
     }
 }
 
+=item _handle_auth
+
+Handles authentication if it thinks it needs to.
+
+=cut
 
 sub _handle_auth {
     my $self = shift;
@@ -136,8 +191,34 @@ sub _handle_auth {
         ],
         [ $body ],
     ];
-
 }
+
+=item _handle_static 
+
+Processes a static file if it thinks it needs to.
+
+=cut
+
+sub _handle_static {
+    my $self = shift;
+    my $env = shift;
+
+    my $path = $env->{PATH_INFO};
+
+    if ( $path =~ /\.(gif|png|jpg|ico|swf|ico|mov|mp3|pdf|js|css)$/ ) {
+        my $root = $env->{'tt.root'};
+        my $file = Plack::App::File->new({ root => $root });
+        return $file->call($env);
+    }
+
+    return;
+}
+
+=item _handle_mongo_api 
+
+Processes a mongo api request if it thinks this is one.
+
+=cut
 
 sub _handle_mongo_api {
     my $self = shift;
@@ -162,6 +243,12 @@ sub _handle_mongo_api {
 
 }
 
+=item  _handle_tt 
+
+Processes a TemplateToolkit type request
+
+=cut
+
 sub _handle_tt {
     my $self = shift;
     my $env = shift;
@@ -183,20 +270,6 @@ sub _handle_tt {
     return [ $code, [ 'Content-Type' => $type ], [$content] ];
 }
 
-sub _handle_static {
-    my $self = shift;
-    my $env = shift;
-
-    my $path = $env->{PATH_INFO};
-
-    if ( $path =~ /\.(gif|png|jpg|ico|swf|ico|mov|mp3|pdf|js|css)$/ ) {
-        my $root = $env->{'tt.root'};
-        my $file = Plack::App::File->new({ root => $root });
-        return $file->call($env);
-    }
-
-    return;
-}
 
 sub _process_tt{
     my $self = shift;
@@ -256,6 +329,10 @@ sub _process_mongo_api_request {
 
     return 1;
 }
+
+=back
+
+=cut
 
 ##
 1;
