@@ -87,8 +87,8 @@ sub _set_config{
     # is this a request for thincms admin?
     if ( $env->{PATH_INFO} =~ s|^/thincms/|/| ) {
         # add to env for thincms admin system
-        $env->{'tt.root'}     = $FindBin::Bin . '/thincms_public';
         $env->{'thincms.cfg'} = $cfg;
+        $env->{'tt.root'}     = $FindBin::Bin . '/thincms_public';
         $env->{'tt.vars'}->{'mongodb_name'} = $web->{mongodb_name};
     }
 }
@@ -97,6 +97,9 @@ sub _set_config{
 sub _handle_auth {
     my $self = shift;
     my $env = shift;
+
+    # only do auth when this is a thincms type request
+    return unless exists $env->{'thincms.cfg'};
 
     my $auth = $env->{HTTP_AUTHORIZATION};
     if ($auth =~ /^Basic (.*)$/) {
