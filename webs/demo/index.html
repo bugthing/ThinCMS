@@ -1,43 +1,52 @@
+<!doctype html>
+<html>
+<head>
+  <title>ThinCMS</title>
+  <meta name="description" content="A demo site to show how the ThinCMS vhosts are built">
+  <meta name="author" content="ThinCMS">
+  <link rel="shortcut icon" href="./img/favicon.ico" />
+  <link rel="stylesheet" href="./css/style.css?v=2" />
+</head>
+<body>
 
+    <h1> This is a regular HTML page </h1>
+    
+    <p> 
+        Except ... if you are cunning about the URL requested you could find there is
+        <br />
+        &nbsp; &nbsp; 
+        &#91;&#37 doc &#37;&#93;
+        <br />
+        and&#47;or 
+        <br />
+        &nbsp; &nbsp; 
+        &#91;&#37 list &#37;&#93;
+        <br />
+        available
+    </p>
+    
+    <p>
+    	[% mdb.Blog.find().all() %] 
+    	<ul>
+    	[% FOREACH item IN mdb.Blog.find().all() %] 
+    	    <li>
+    	        [% item.title %] - [% item.date %]
+    	    </li>
+    	[% END  %] 
+    	</ul>
+    </p>
+    
+    <p> [% doc %] </p>
+    
+    <p> [% list %]
+    	<ul>
+    	[% FOREACH item IN list  %] 
+    	    <li>
+    	        [% item %]
+    	    </li>
+    	[% END  %] 
+    	</ul>
+    </p>
 
-<h1> This is a regular HTML page </h1>
-
-<p> 
-    Except ... if you are cunning about the URL requested you could find there is
-    <br />
-    &nbsp; &nbsp; 
-    &#91;&#37 doc &#37;&#93;
-    <br />
-    and&#47;or 
-    <br />
-    &nbsp; &nbsp; 
-    &#91;&#37 list &#37;&#93;
-    <br />
-    available
-</p>
-
-<p>
-	[% mdb.Blog.find().all() %] 
-	<ul>
-	[% FOREACH item IN mdb.Blog.find().all() %] 
-	    <li>
-	        [% item.title %] - [% item.date %]
-	    </li>
-	[% END  %] 
-	</ul>
-</p>
-
-<p>
-	[% doc %] 
-</p>
-
-<p>
-	[% list %]
-	<ul>
-	[% FOREACH item IN list  %] 
-	    <li>
-	        [% item %]
-	    </li>
-	[% END  %] 
-	</ul>
-</p>
+</body>
+</html>

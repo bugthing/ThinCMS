@@ -7,12 +7,15 @@ use parent 'Plack::Middleware';
 use FindBin;
 use Plack::MIME;
 use Plack::App::File;
-use Template;
+use Plack::Request;
+
 use Config::Any;
-use MongoDB;
 use Try::Tiny;
 use JSON::XS;
-use Plack::Request;
+use MIME::Base64;
+use MongoDB;
+use Template;
+use MongoAPI;
 
 use Plack::Util::Accessor qw/cfg_file cfg mongodb json/;
 
@@ -45,6 +48,9 @@ sub call {
 
     my $res;
 
+    $res = $self->_handle_auth($env);
+    return $res if ( defined $res );
+
     $res = $self->_handle_static($env);
     return $res if ( defined $res && $res->[0] != 404);
 
@@ -57,37 +63,86 @@ sub call {
     return $self->app->($env);
 }
 
+sub _set_config{
+    my $self = shift;
+    my ( $env ) = @_;
+
+    my $cfg = $self->cfg();
+
+    # look in the config for 'webs', match and store.
+    my $web = {};
+    foreach ( @{ $cfg->{'webs'} } ) {
+        $web = $_ if ( $_->{default} );
+        # TBA - match config based on hostname..
+        if ( $web->{host} ) {
+        }
+    }
+
+    # set env (for tt/static processing)
+    my $mdb_name = $web->{mongodb_name};
+    $env->{'tt.root'}            = $web->{root};
+    $env->{'tt.vars'}->{thincms} = $web;
+    $env->{'tt.vars'}->{mdb}     = $self->mongodb()->$mdb_name;
+
+    # is this a request for thincms admin?
+    if ( $env->{PATH_INFO} =~ s|^/thincms/|/| ) {
+        # add to env for thincms admin system
+        $env->{'tt.root'}     = $FindBin::Bin . '/thincms_public';
+        $env->{'thincms.cfg'} = $cfg;
+        $env->{'tt.vars'}->{'mongodb_name'} = $web->{mongodb_name};
+    }
+}
+
+
+sub _handle_auth {
+    my $self = shift;
+    my $env = shift;
+
+    my $auth = $env->{HTTP_AUTHORIZATION};
+    if ($auth =~ /^Basic (.*)$/) {
+        my($user, $pass) = split /:/, (MIME::Base64::decode($1) || ":");
+        $pass = '' unless defined $pass;
+
+        my $cfg_user = $env->{'tt.vars'}->{thincms}->{admin_user};
+        my $cfg_pass = $env->{'tt.vars'}->{thincms}->{admin_pass};
+
+        if ( $user eq $cfg_user && $pass eq $cfg_pass ) {
+            $env->{REMOTE_USER} = $user;
+            return;
+        }
+    }
+
+    my $body = 'Authorization required';
+    return [ 401,
+        [ 'Content-Type' => 'text/plain',
+          'Content-Length' => length $body,
+          'WWW-Authenticate' => 'Basic realm="restricted area"',
+        ],
+        [ $body ],
+    ];
+
+}
+
 sub _handle_mongo_api {
     my $self = shift;
     my $env = shift;
 
-    return unless( $env->{PATH_INFO} =~ s|^/mongodb/|/| );
+    return unless $env->{PATH_INFO} =~ s|/mongodb/||;
 
-    my $req = Plack::Request->new($env);
-
-    my $vars = {
-        params => $req->query_parameters(),
-        method => $req->method(),
-        json   => $req->content,
+    my ($code, $type, $content);
+    eval { 
+        $self->_process_mongo_api_request( $env, \$type, \$content );
     };
-    my $path = $env->{PATH_INFO};
-    $path =~ s{^/}{};
-    $path =~ s{/$}{};
-
-    my $content;
-
-    if ( $self->_process_mongo_api_request( $vars, $path, \$content ) ) {
-        return [
-            '200', [ 'Content-Type' => 'application/json' ],
-            [$content]
-        ];
+    if ( $@ ) {
+        $code = 404;
+        $type = 'text/html';
+        $content = "error processing mongo api request: $@";
     } else {
-        my $error = "Could not process MongoDB request";
-        return [
-            '500', [ 'Content-Type' => 'text/html' ],
-            [$error]
-        ];
+        $code = 200;
+        $type = 'application/json';
     }
+
+    return [ $code, [ 'Content-Type' => $type ], [$content] ];
 
 }
 
@@ -116,7 +171,7 @@ sub _handle_static {
     my $self = shift;
     my $env = shift;
 
-    my $path_match = qr{\.(gif|png|jpg|swf|ico|mov|mp3|pdf|js|css)$};
+    my $path_match = qr{\.(gif|png|jpg|ico|swf|ico|mov|mp3|pdf|js|css)$};
     my $path = $env->{PATH_INFO};
 
     for ($path) {
@@ -154,165 +209,38 @@ sub _process_tt{
     }
 }
 
-sub _set_config{
-    my $self = shift;
-    my ( $env ) = @_;
-
-    my $cfg = $self->cfg();
-
-    # look in the config for 'webs', match and store.
-    my $web = {};
-    foreach ( @{ $cfg->{'webs'} } ) {
-        $web = $_ if ( $_->{default} );
-        # TBA - match config based on hostname..
-        if ( $web->{host} ) {
-        }
-    }
-
-    # set env (for tt/static processing)
-    $env->{'tt.root'}            = $web->{root};
-    $env->{'tt.vars'}->{thincms} = $web;
-
-    # is this a request for thincms admin?
-    if ( $env->{PATH_INFO} =~ s|^/thincms/|/| ) {
-        # add to env for thincms admin system
-        $env->{'tt.root'}     = $FindBin::Bin . '/thincms_public';
-        $env->{'thincms.cfg'} = $cfg;
-        $env->{'tt.vars'}->{'mongodb_name'} = $web->{mongodb_name};
-    }
-}
-
 sub _process_mongo_api_request {
-    my ( $self, $vars, $path,$content_ref ) = @_;
-
-    my $method = $vars->{method};
-    my $params = $vars->{params};
+    my ( $self, $env, $type_ref, $content_ref ) = @_;
 
     my $json_obj = $self->json();
-    my $connection = $self->mongodb();
+    my $req = Plack::Request->new($env);
 
-    my $data;
-    if ( $vars->{json} ) {
+    my $data = $req->content;
+    if ( $data ) {
         try {
-            $data = $json_obj->decode( $vars->{json} );
+            $data = $json_obj->decode( $data );
         } catch {
-            warn "MongoDB middleware json decode error: $_"; 
+            warn "JSON decode error: $_"; 
         };
         return 0 unless defined $data;
     }
 
-    my ( $db, $coll, $id, $json, $database, $collection, $oid, $document );
+    my $path = $env->{PATH_INFO};
+    $path =~ s{^/}{};
+    $path =~ s{/$}{};
 
-    if ( $path eq 'databases' ) {
+    # process the request ..
+    my $response_ref = MongoAPI->process_request( 
+        mdb_conn => $self->mongodb(),
+        method   => $req->method()  , 
+        params   => $req->query_parameters(),
+        path     => $path           ,
+        input    => $data           ,
+    );
 
-        # List databases
-        my @dbs = $connection->database_names;
-
-        $json = { rows => \@dbs };
-    }
-    elsif ( $path =~ m|^(?<database>\w+)/(?<collection>\w+)/(?<id>.+)$| ) {
-
-        # Document specific
-
-        $db   = $+{database};
-        $coll = $+{collection};
-        $id   = $+{id};
-
-        $database   = $connection->$db;
-        $collection = $database->$coll;
-        $oid = MongoDB::OID->new(value => $id);
-
-        if ( $method eq 'GET' ) {
-
-            # output doc
-
-            $document = $collection->find_one({ _id => $oid }); 
-
-            $json = $document;
-        }
-        elsif ( $method eq 'POST' || $method eq 'PUT' ) {
-
-            # update doc
-
-            $collection->update({_id => $oid}, $data, {"upsert" => 1});
-
-            $json = { 'ok' => 1, msg => 'updated document' };
-        }
-        elsif ( $method eq 'DEL' ) {
-
-            # delete doc
-
-            $collection->remove( {_id => $oid} );
-
-            $json = { 'ok' => 1, msg => 'deleted document' };
-        }
-
-    }
-    elsif ( $path =~ m|^(?<database>\w+)/(?<collection>\w+)$| ) {
-
-        # Collection specific
-
-        $db   = $+{database};
-        $coll = $+{collection};
-
-        $database   = $connection->$db;
-        $collection = $database->$coll;
-
-        if ( $method eq 'GET' ) {
-
-            # list docs
-            my $cursor = $collection->find();
-            my @docs = $cursor->all;
-
-            $json = { rows => \@docs };
-
-        }
-        elsif ( $method eq 'POST' || $method eq 'PUT' ) {
-
-            # create doc
-
-            $id = $collection->insert( $data );
-
-            $json = { 'ok' => 1, msg => 'added', _id => $id };
-
-        }
-        elsif ( $method eq 'DEL' ) {
-
-            # delete coll
-
-            $collection->drop();
-
-            $json = { 'ok' => 1, msg => 'deleted collection' };
-        }
-    }
-    elsif ( $path =~ m|^(?<database>\w+)$| ) {
-
-        # Database specific
-
-        $db   = $+{database};
-
-        $database   = $connection->$db;
-
-        if ( $method eq 'GET' || $method eq 'POST' || $method eq 'PUT' ) {
-
-            # list colls
-            my @colls = $database->collection_names;
-
-            $json = { rows => \@colls };
-        }
-        elsif ( $method eq 'DEL' ) {
-
-            # delete db
-
-            $database->drop();
-
-            $json = { 'ok' => 1, msg => 'deleted database' };
-        }
-
-    }
-
-    # create the json and set into content ref..
-    $$content_ref = $json_obj->encode( $json );
+    $$type_ref = 'application/json';
+    # .. create the json and set into content ref..
+    $$content_ref = $json_obj->encode( $response_ref );
 
     return 1;
 }

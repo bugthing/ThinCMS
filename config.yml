@@ -5,17 +5,23 @@ mongodb:
 
 webs:
 
-  - host: "jenbrister.co.uk"
+  - host: "localhost"
     root: "/home/benjamin/dev/github/ThinCMS/webs/demo"
     default: 1
     mongodb_name: "testdb"
+    admin_user: demo
+    admin_pass: d3mo
 
   - host: "jenbrister.co.uk"
     root: "/home/benjamin/dev/github/ThinCMS/webs/jenbrister"
     mongodb_name: "jenbrister"
+    admin_user: jen
+    admin_pass: thincmsAccess
 
   - robertdancer:
     root: "/home/benjamin/dev/github/ThinCMS/webs/robertdancer"
     host: "robertdancer.co.uk"
     mongodb_name: "robertdancer"
+    admin_user: rob
+    admin_pass: thincmsAccess
 
