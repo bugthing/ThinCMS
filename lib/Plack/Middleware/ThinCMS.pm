@@ -10,7 +10,7 @@ use FindBin;
 use Plack::MIME;
 use Plack::App::File;
 use Plack::Request;
-
+use Encode;
 use Config::Any;
 use Try::Tiny;
 use JSON::XS;
@@ -288,6 +288,7 @@ sub _process_tt{
     ${ $type } = 'text/html';
 
     if ( $tt->process( $path, $vars, $content ) ) {
+        ${ $content } = encode('utf8', ${ $content } );
         ${ $type } = Plack::MIME->mime_type($1) if $path =~ /(\.\w{1,6})$/
     } else {
         ${ $content } = "Template processing error:" . $tt->error();

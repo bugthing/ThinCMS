@@ -28,7 +28,7 @@ webs:
             type: LargeText
 
   - host: jenbrister.co.uk
-    root: /home/benjamin/dev/projects/jenbrister/original_site
+    root: /home/benjamin/dev/projects/jenbrister/tt_site
     mongodb_name: jenbrister
     admin_user: jen
     admin_pass: brister
