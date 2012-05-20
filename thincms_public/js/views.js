@@ -27,12 +27,12 @@ App.Button = Ember.Button.extend({
 
 
 /* 
- * ContentTypeSelectView - Drop down of content types.
+ * EntryTypeSelectView - Drop down of content types.
  *   Inherits from Ember.Select and uses 2 controllers
  */
-App.ContentTypeSelectView = App.Select.extend({
-    contentBinding:	  "App.contentTypeController",                      // source of options
-    selectionBinding: "App.selectedContentTypeController.contentType",  // set when selected
+App.EntryTypeSelectView = App.Select.extend({
+    contentBinding:	  "App.entryTypeController",                      // source of options
+    selectionBinding: "App.selectedEntryTypeController.entryType",  // set when selected
     optionLabelPath:  "content.name",                                   // label
     optionValuePath:  "content.name"                                    // value
 });

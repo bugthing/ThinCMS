@@ -6,19 +6,19 @@ App.MongoDoc = Ember.Object.extend({
 
     id: Ember.required(), // id of the mongo document.
 
-    contentType: Ember.required(), // object that holds meta data about the Doc
+    entryType: Ember.required(), // object that holds meta data about the Doc
 
     mdb: function(){    // name of mongo database to use.
-        return this.get('contentType').get('mdb');
-    }.property('contentType'),
+        return this.get('entryType').get('mdb');
+    }.property('entryType'),
 
     mcoll: function(){  // name of mongo collection to use.
-        return this.get('contentType').get('mcoll');
-    }.property('contentType'),
+        return this.get('entryType').get('mcoll');
+    }.property('entryType'),
 
     fields: function(){ // fields to load/save
-        return this.get('contentType').get('fields');
-    }.property('contentType'),
+        return this.get('entryType').get('fields');
+    }.property('entryType'),
     
     load: function(){
         var id = this.get('id');
@@ -28,13 +28,13 @@ App.MongoDoc = Ember.Object.extend({
                 url: this.get('_URL'),
                 type: 'GET',
                 dataType: 'json',
-                contentType: 'application/json',
+                entryType: 'application/json',
                 processData: false,
                 success: function(data) {
 
                     Ember.beginPropertyChanges(self);
                     var flds = self.get('fields');
-                    for(var i=0; i< flds.length; i++) {
+                    for(var i=0; i < flds.length; i++) {
                         var f = flds[i];
                         self.set( f, data[f] );
                         self.addObserver( f, function(){ self.set( '_isFreshLoad', false ) } );
@@ -70,7 +70,7 @@ App.MongoDoc = Ember.Object.extend({
             type: type,
             dataType: 'json',
             "data": JSON.stringify( data ),
-            contentType: 'application/json',
+            entryType: 'application/json',
             processData: false,
             success: function(data) {
                 if ( data.ok == 1 ) {
@@ -95,7 +95,7 @@ App.MongoDoc = Ember.Object.extend({
             url: this.get('_URL'),
             type: 'DEL',
             dataType: 'json',
-            contentType: 'application/json',
+            entryType: 'application/json',
             processData: false,
             success: function(data) {
                 if ( data.ok == 1 ) self.set('id', null);
@@ -123,8 +123,8 @@ App.MongoDoc = Ember.Object.extend({
 
 App.Entry = App.MongoDoc.extend({ title: "New Entry" });
 
-App.ContentType = Ember.Object.extend({
-    name: Ember.required(), // name of content type (used for collection)
+App.EntryType = Ember.Object.extend({
+    name: Ember.required(), // name of entry type (used for collection)
     cfg: { elements: {} },  // eg. "cfg: { elements: { 'title': {type: 'Text'}, 'content': {type: 'LargeText'} } }"
 
     // these are dynamicly generated propertys and a used as helper methods when 
@@ -138,13 +138,18 @@ App.ContentType = Ember.Object.extend({
     }.property('name'),
 
     elements: function() {
-        return this.get('cfg').elements;
+        var elements  = this.get('cfg').elements;
+        var es = new Array();
+        for(var i = 0;i < elements.length;i++) {
+            es.push( elements[i] );
+        }
+        return es;
     }.property('cfg'),
 
     fields: function() {
         var flds = new Array();
         var elements = this.get('elements');
-        for(var i=0; i < elements.length; i++ ) {
+        for(var i = 0;i < elements.length;i++) {
             var n = elements[i].name;
             flds.push(n);
         }

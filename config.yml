@@ -14,20 +14,18 @@ webs:
     entrytypes:
       - name: Pages
         elements: 
-          - title: 
-              type: Text
-            content: 
-              type: LargeText
-            date:
-              type: Date
+          - name: title
+            type: Text
+          - name: content
+            type: LargeText
       - name: Blog
         elements: 
-          - title: 
-              type: Text
-            date:
-              type: Date
-            content: 
-              type: LargeText
+          - name: title
+            type: Text
+          - name: date
+            type: Date
+          - name: content
+            type: LargeText
 
   - host: jenbrister.co.uk
     root: /home/benjamin/dev/projects/jenbrister/original_site
@@ -37,24 +35,24 @@ webs:
     entrytypes:
       - name: Pages
         elements: 
-          - title: 
-              type: Text
-            content: 
-              type: LargeText
+          - name: title
+            type: Text
+          - name: content
+            type: LargeText
       - name: Gigs
         elements: 
-          - title: 
-              type: Text
-            date:
-              type: Date
-            content: 
-              type: LargeText
+          - name: title
+            type: Text
+          - name: date
+            type: Date
+          - name: content
+            type: LargeText
       - name: Blog
         elements: 
-          - title: 
-              type: Text
-            content: 
-              type: LargeText
+          - name: title
+            type: Text
+          - name: content
+            type: LargeText
 
   - robertdancer:
     root: /home/benjamin/dev/github/ThinCMS/webs/robertdancer
@@ -65,10 +63,10 @@ webs:
     entrytypes:
       - name: Job
         elements: 
-          - title: 
-              type: Text
-            content: 
-              type: LargeText
-            images:
-              type: Images
+          - name: title
+            type: Text
+          - name: content
+            type: LargeText
+          - name: pictures
+            type: Images
         

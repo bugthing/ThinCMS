@@ -40,7 +40,7 @@
         	<div id="entrys-list" class="ui-widget-content ui-corner-all">
 
 			<script type="text/x-handlebars">
-			    {{view App.ContentTypeSelectView }}
+			    {{view App.EntryTypeSelectView }}
 			</script>
 		
 			<script type="text/x-handlebars" >
@@ -52,10 +52,10 @@
 		  	  	  {{/each}}
 		  	  	</ul>
 				
-				{{#if App.entrysController.contentType}}
+				{{#if App.entrysController.entryType}}
 		  			{{#view App.Button target="App.entrysController" action="newEntry" }} New Entry {{/view}}
 		  	  	{{else}}
-					Please select a content type...	
+					Please select a entry type...	
 				{{/if}}
 		  	</script>
 		
@@ -82,7 +82,7 @@
 			  	  	  		{{#view App.Button action="deleteEntry" target="App.selectedEntryController" }} Delete {{/view}}
 			  	  	  	{{/view}}
 			  	  	{{else}}
-        	            			No content selected.
+        	            			No entry selected.
 			  	  	{{/if}}
 				</script>
 
@@ -101,6 +101,26 @@
 	<script src="./js/models.js"></script>
 	<script src="./js/views.js"></script>
    	<script src="./js/controllers.js"></script>
+   	<script>
+
+        /*
+         * Builds and holds EntryType objects.
+         */
+
+        var entryTypes = new Array();
+        entryTypes.push( Ember.Object.create({ id: 0, name:'-- please select --'}) );
+
+        /* generated from tt var thincms.entrytypes */
+        [% USE SimpleJson %]
+        [% FOREACH et IN thincms.entrytypes %]
+            entryTypes.push( App.EntryType.create({
+                name: '[% et.name %]',
+                cfg: { elements: [% SimpleJson.toJson(et.elements) %] }
+            }))
+        [% END %]
+
+        App.entryTypeController = Ember.ArrayController.create({ content: entryTypes });
+    </script>
 
 </body>
 </html>

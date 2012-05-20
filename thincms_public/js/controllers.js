@@ -1,10 +1,9 @@
 
 /*
- * This controllers builds and holds ContentType objects.
- */
-App.contentTypeController = Ember.ArrayController.create({
+ * This controllers builds and holds EntryType objects.
+App.entryTypeController = Ember.ArrayController.create({
     content: [ Ember.Object.create({ id: 0, name:'-- please select --'}),
-        App.ContentType.create({
+        App.EntryType.create({
             name: 'Blog',
             fields: ['title','content','date'],
             cfg: { elements: { 
@@ -13,68 +12,69 @@ App.contentTypeController = Ember.ArrayController.create({
                 'date': {type: 'Date'} 
             } }
         }),
-        App.ContentType.create({
+        App.EntryType.create({
             name: 'Events',
             fields: ['title','content'],
             cfg: { elements: { 'title': {type: 'Text'}, 'content': {type: 'LargeText'} } }
         }),
-        App.ContentType.create({
+        App.EntryType.create({
             name: 'Page',
             fields: ['title','content'],
             cfg: { elements: { 'title': {type: 'Text'}, 'content': {type: 'LargeText'} } }
         }) ,
-        App.ContentType.create({
+        App.EntryType.create({
             name: 'Dan',
             fields: ['title','date'],
             cfg: { elements: { 'title': {type: 'Text'}, 'date': {type: 'Date'} } }
         }) 
     ],
 });
+ */
 
 /*
- * This controller holds the selected ContentType object and fires when 
- * ContentType is changed..
+ * This controller holds the selected EntryType object and fires when 
+ * EntryType is changed..
  */
-App.selectedContentTypeController = Ember.Object.create({
-    contentType: null,
+App.selectedEntryTypeController = Ember.Object.create({
+    entryType: null,
     changedSelection: function() {
         App.selectedEntryController.clearEntry(); // clear any entry being edited.
 	    App.entrysController.loadEntrys(); // load list of entrys 
-    }.observes('contentType')
+    }.observes('entryType')
 });
 
 /*
- * This controller holds the list of Entry's that is of the selected ContentType.
+ * This controller holds the list of Entry's that is of the selected EntryType.
  */
 App.entrysController = Ember.ArrayController.create({
     content: [],
 
-    contentType: function() {
-        if ( App.selectedContentTypeController.get('contentType') == null || App.selectedContentTypeController.get('contentType').id == 0 ) {
+    entryType: function() {
+        if ( App.selectedEntryTypeController.get('entryType') == null || App.selectedEntryTypeController.get('entryType').id == 0 ) {
             return null;
         }
-        return App.selectedContentTypeController.get('contentType');
-    }.property('App.selectedContentTypeController.contentType'),
+        return App.selectedEntryTypeController.get('entryType');
+    }.property('App.selectedEntryTypeController.entryType'),
 
     loadEntrys: function() {
 
         this.set('content', [] );
 
-	    if ( this.get('contentType') == null ) return;
+	    if ( this.get('entryType') == null ) return;
 
-        var mcoll = this.get('contentType').get('mcoll');
+        var mcoll = this.get('entryType').get('mcoll');
 
         var self = this;
 
         // fetch rows.. build App.Entry models and add to this controller..
-        this.get('contentType').set('rows', []);
-        this.get('contentType').addObserver('rows', function() {
-            var rows = self.get('contentType').get('rows');
+        this.get('entryType').set('rows', []);
+        this.get('entryType').addObserver('rows', function() {
+            var rows = self.get('entryType').get('rows');
 	        var entrys = new Array();
             for( var i=0; i<rows.length; i++ ) {
                 var row = rows[i];
 	            var entry = App.Entry.create({ 
-                    contentType: self.get('contentType'),
+                    entryType: self.get('entryType'),
                     id: row["id"],
                     title: row["title"]
                 });
@@ -82,11 +82,11 @@ App.entrysController = Ember.ArrayController.create({
             }
             self.set('content', entrys);
         });
-        this.get('contentType').fetchRows();
+        this.get('entryType').fetchRows();
     },
     newEntry: function() {
         this.pushObject( App.Entry.create({ 
-            contentType: this.get('contentType'),
+            entryType: this.get('entryType'),
         }));
     },
     removeEntry: function(entry) {
@@ -129,7 +129,7 @@ App.selectedEntryController = Ember.Object.create({
         // this function looks at the contenttype config and uses eval to build a view object bound to
         // the corresponding field within the 'entry' controller
 
-        var ct = App.entrysController.get('contentType');
+        var ct = App.entrysController.get('entryType');
 
         var views = new Array();
 
@@ -141,10 +141,24 @@ App.selectedEntryController = Ember.Object.create({
 
         for(var i=0; i< flds.length; i++) {
             var f = flds[i];
-            var c = cfgs[f];
 
-            var t;
-            if ( typeof(c) !== 'undefined' ) t = c.type;
+            // find config for this field..
+            var c;
+            for(var x=0; x< cfgs.length; x++) {
+                if ( cfgs[x].name == f ) c = cfgs[x];
+            }
+
+            if ( ! c ) {
+                console.debug("Could not find config for element:" + f)
+                continue;
+            }
+
+            var t = c.type;
+
+            if ( ! t ) {
+                console.debug("Could not find type for element:" + f)
+                continue;
+            }
 
             var v;
             var v = eval("App." + t + "Field.extend({ valueBinding: 'App.selectedEntryController.entry." + f + "' })");;
