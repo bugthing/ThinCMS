@@ -1,4 +1,6 @@
-package MongoAPI;
+package ThinCMS::MongoAPI;
+# ABSTRACT: MongoAPI, handles rest requests with a mongodb connection
+# VERSION: 0.1
 
 =head1 NAME
  
@@ -24,7 +26,15 @@ use Data::Dumper;
 
 =over
 
-=item process_request( $req )
+=item process_request( method => 'GET', path => 'mydb/foocoll/ABC123', mdb_conn => $con ( params => {}, input => {} ) )
+
+Takes the main elements of a REST request and processes it in a MongoDB way.
+
+method      : String - GET/POST/PUT/DEL
+path        : String - path requested
+mdb_conn    : L<MongoDB> intance
+params      : HashRef - params
+input       : HashRef - input data (eg. the document data for a POST request to a document path)
 
 =cut
 

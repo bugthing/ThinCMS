@@ -5,23 +5,70 @@ mongodb:
 
 webs:
 
-  - host: "localhost"
-    root: "/home/benjamin/dev/github/ThinCMS/webs/demo"
+  - host: localhost"
+    root: /home/benjamin/dev/github/ThinCMS/webs/demo
     default: 1
-    mongodb_name: "testdb"
+    mongodb_name: testdb
     admin_user: demo
     admin_pass: d3mo
+    entrytypes:
+      - name: Pages
+        elements: 
+          - title: 
+              type: Text
+            content: 
+              type: LargeText
+            date:
+              type: Date
+      - name: Blog
+        elements: 
+          - title: 
+              type: Text
+            date:
+              type: Date
+            content: 
+              type: LargeText
 
-  - host: "jenbrister.co.uk"
-    root: "/home/benjamin/dev/projects/jenbrister/original_site"
-    mongodb_name: "jenbrister"
+  - host: jenbrister.co.uk
+    root: /home/benjamin/dev/projects/jenbrister/original_site
+    mongodb_name: jenbrister
     admin_user: jen
     admin_pass: brister
+    entrytypes:
+      - name: Pages
+        elements: 
+          - title: 
+              type: Text
+            content: 
+              type: LargeText
+      - name: Gigs
+        elements: 
+          - title: 
+              type: Text
+            date:
+              type: Date
+            content: 
+              type: LargeText
+      - name: Blog
+        elements: 
+          - title: 
+              type: Text
+            content: 
+              type: LargeText
 
   - robertdancer:
-    root: "/home/benjamin/dev/github/ThinCMS/webs/robertdancer"
-    host: "robertdancer.co.uk"
-    mongodb_name: "robertdancer"
+    root: /home/benjamin/dev/github/ThinCMS/webs/robertdancer
+    host: robertdancer.co.uk
+    mongodb_name: robertdancer
     admin_user: rob
     admin_pass: dancer
-
+    entrytypes:
+      - name: Job
+        elements: 
+          - title: 
+              type: Text
+            content: 
+              type: LargeText
+            images:
+              type: Images
+        

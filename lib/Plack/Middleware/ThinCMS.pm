@@ -1,4 +1,6 @@
 package Plack::Middleware::ThinCMS;
+# ABSTRACT: ThinCMS Middleware for use with Plack
+# VERSION: 0.1
 
 use strict;
 use warnings;
@@ -15,7 +17,7 @@ use JSON::XS;
 use MIME::Base64;
 use MongoDB;
 use Template;
-use MongoAPI;
+use ThinCMS::MongoAPI;
 
 use Plack::Util::Accessor qw/cfg_file cfg mongodb json req/;
 
@@ -76,12 +78,13 @@ sub _set_config{
     # look in the config for 'webs', match and store.
     my $web = {};
     foreach ( @{ $cfg->{'webs'} } ) {
+
+        # set default?.
         $web = $_ if ( $_->{default} );
 
-        # TBA - match config based on hostname..
+        # match config based on hostname..
         my $search_string = $req->uri->host;
         my $match_string  = quotemeta( $_->{host} );
-
         if ($search_string =~ /$match_string/) {
             $web = $_;
             last;
@@ -184,19 +187,15 @@ sub _handle_static {
     my $self = shift;
     my $env = shift;
 
-    my $path_match = qr{\.(gif|png|jpg|ico|swf|ico|mov|mp3|pdf|js|css)$};
     my $path = $env->{PATH_INFO};
 
-    for ($path) {
-        my $matched = 'CODE' eq ref $path_match ? $path_match->($_) : $_ =~ $path_match;
-        return unless $matched;
+    if ( $path =~ /\.(gif|png|jpg|ico|swf|ico|mov|mp3|pdf|js|css)$/ ) {
+        my $root = $env->{'tt.root'};
+        my $file = Plack::App::File->new({ root => $root });
+        return $file->call($env);
     }
 
-    my $root = $env->{'tt.root'};
-
-    $self->{file} ||= Plack::App::File->new({ root => $root });
-    local $env->{PATH_INFO} = $path; 
-    return $self->{file}->call($env);
+    return;
 }
 
 sub _process_tt{
@@ -243,7 +242,7 @@ sub _process_mongo_api_request {
     $path =~ s{/$}{};
 
     # process the request ..
-    my $response_ref = MongoAPI->process_request( 
+    my $response_ref = ThinCMS::MongoAPI->process_request( 
         mdb_conn => $self->mongodb(),
         method   => $req->method()  , 
         params   => $req->query_parameters(),
