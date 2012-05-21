@@ -17,7 +17,7 @@ webs:
           - name: title
             type: Text
           - name: content
-            type: LargeText
+            type: HTML
       - name: Blog
         elements: 
           - name: title
@@ -37,8 +37,10 @@ webs:
         elements: 
           - name: title
             type: Text
-          - name: content
+          - name: heading
             type: LargeText
+          - name: content
+            type: HTML
       - name: Gigs
         elements: 
           - name: title

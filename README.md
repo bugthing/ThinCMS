@@ -22,7 +22,7 @@ Start
   bundle install
   rake
   cd ../../
-  ln -s ../../../submodules/ember.js/dist ./public/js/libs/emberjs
+  ln -s ../../../submodules/ember.js/dist ./thincms_public/js/libs/emberjs
 
 # Get jQuery
 
@@ -33,7 +33,12 @@ Start
 
   wget http://jqueryui.com/download/jquery-ui-1.8.20.custom.zip 
   mkdir -p ./public/js/libs/jquery-ui
-  mv jquery-1.7.2.min.zip ./public/js/libs/jquery-ui
+  mv jquery-1.7.2.min.zip ./thincms_public/js/libs/jquery-ui
+
+# Get jQuery WYSIWYG
+
+  git submodule add git://github.com/akzhan/jwysiwyg.git ./submodules/jwysiwyg
+  ln -s ../../../submodules/jwysiwyg ./thincms_public/js/libs/jwysiwyg
 
 # Start the application
 

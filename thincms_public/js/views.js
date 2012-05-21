@@ -1,4 +1,6 @@
 
+/* --- App.???Field ---- Dynamically created form elements --------- */
+
 App.TextField = Ember.TextField.extend({
     classNames: ["ui-widget", "ui-state-default", "ui-corner-all", "forminput"],
     didInsertElement: function() {
@@ -9,14 +11,63 @@ App.LargeTextField = Ember.TextArea.extend({
     didInsertElement: function() {
     }
 });
-App.Select = Ember.Select.extend({
-    classNames: ["ui-widget", "ui-state-default", "ui-corner-all", "forminput"]
-});
 App.DateField = Ember.TextField.extend({
     classNames: ["ui-widget", "ui-state-default", "ui-corner-all", "forminput"],
     didInsertElement: function() {
         this.$().datepicker();
     }
+});
+App.HTMLField = Ember.TextArea.extend({
+    classNames: ["ui-widget", "ui-state-default", "ui-corner-all", "forminput"],
+    didInsertElement: function() {
+
+        this._super();
+
+        var self = this;
+        Ember.run.schedule('actions', this, function(){
+            this.$().wysiwyg({
+                autoGrow: true,
+                autoSave: true,
+                events: {
+                    save: function( ) { 
+                        var c = this.getContent();
+                        self.set('value', this.getContent() ); 
+                    },
+                },
+                rmUnusedControls: true,
+                rmUnwantedBr: true,
+                controls: {
+                    bold:                 { visible: true },
+                    underline:            { visible: true },
+                    italic:               { visible: true },
+                    h1:                   { visible: true },
+                    h2:                   { visible: true },
+                    h3:                   { visible: true },
+                    paragraph:            { visible: true },
+                    indent:               { visible: true },
+                    outdent:              { visible: true },
+                    increaseFontSize:     { visible: true },
+                    decreaseFontSize:     { visible: true },
+                    insertOrderedList:    { visible: true },
+                    insertUnorderedList:  { visible: true },
+                    insertHorizontalRule: { visible: true },
+                    justifyCenter:        { visible: true },
+                    justifyFull:          { visible: true },
+                    justifyLeft:          { visible: true },
+                    justifyRight:         { visible: true },
+                    undo:                 { visible: true },
+                    redo:                 { visible: true },
+                }
+            });
+        });
+    }
+});
+
+/* ---------------------------- */
+
+
+App.Select = Ember.Select.extend({
+    classNames: ["ui-widget", "ui-state-default", "ui-corner-all", "forminput"]
 });
 App.Button = Ember.Button.extend({
     classNames: ["ui-widget", "ui-state-default", "ui-corner-all", "forminput"],

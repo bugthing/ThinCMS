@@ -1,3 +1,6 @@
 [submodule "submodules/ember.js"]
 	path = submodules/ember.js
 	url = git://github.com/emberjs/ember.js.git
+[submodule "submodules/jwysiwyg"]
+	path = submodules/jwysiwyg
+	url = git://github.com/akzhan/jwysiwyg.git
