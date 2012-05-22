@@ -26,6 +26,8 @@ App.HTMLField = Ember.TextArea.extend({
         var self = this;
         Ember.run.schedule('actions', this, function(){
             this.$().wysiwyg({
+                initialContent: '',
+                iFrameClass: 'ui-widget ui-corner-all forminput',
                 autoGrow: true,
                 autoSave: true,
                 events: {
@@ -59,6 +61,7 @@ App.HTMLField = Ember.TextArea.extend({
                     redo:                 { visible: true },
                 }
             });
+            //$('div.wysiwyg').attr('style', 'background-image: ;');
         });
     }
 });
