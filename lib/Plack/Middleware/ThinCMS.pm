@@ -10,7 +10,7 @@ use FindBin;
 use Plack::MIME;
 use Plack::App::File;
 use Plack::Request;
-use Encode;
+#use Encode;
 use Config::Any;
 use Try::Tiny;
 use JSON::XS;
@@ -18,6 +18,7 @@ use MIME::Base64;
 use MongoDB;
 use Template;
 use ThinCMS::MongoAPI;
+use Data::Dumper;
 
 use Plack::Util::Accessor qw/cfg_file cfg mongodb json req/;
 
@@ -288,7 +289,7 @@ sub _process_tt{
     ${ $type } = 'text/html';
 
     if ( $tt->process( $path, $vars, $content ) ) {
-        ${ $content } = encode('utf8', ${ $content } );
+        #${ $content } = encode('utf8', ${ $content } );
         ${ $type } = Plack::MIME->mime_type($1) if $path =~ /(\.\w{1,6})$/
     } else {
         ${ $content } = "Template processing error:" . $tt->error();
@@ -302,9 +303,10 @@ sub _process_mongo_api_request {
     my $req = $self->req();
 
     my $data = $req->content;
+
     if ( $data ) {
         try {
-            $data = $json_obj->decode( $data );
+            $data = $json_obj->utf8->decode( $data );
         } catch {
             warn "JSON decode error: $_"; 
         };
@@ -326,7 +328,7 @@ sub _process_mongo_api_request {
 
     $$type_ref = 'application/json';
     # .. create the json and set into content ref..
-    $$content_ref = $json_obj->encode( $response_ref );
+    $$content_ref = $json_obj->utf8->encode( $response_ref );
 
     return 1;
 }
