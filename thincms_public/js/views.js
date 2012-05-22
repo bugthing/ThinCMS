@@ -18,7 +18,6 @@ App.DateField = Ember.TextField.extend({
     }
 });
 App.HTMLField = Ember.TextArea.extend({
-    classNames: ["ui-widget", "ui-state-default", "ui-corner-all", "forminput"],
     didInsertElement: function() {
 
         this._super();
@@ -26,18 +25,16 @@ App.HTMLField = Ember.TextArea.extend({
         var self = this;
         Ember.run.schedule('actions', this, function(){
             this.$().wysiwyg({
+                iFrameClass: 'ui-widget ui-corner-all thincms-jwysiwyg',
+                css: {
+                    background: '#FFF',
+                },
                 initialContent: '',
-                iFrameClass: 'ui-widget ui-corner-all forminput',
                 autoGrow: true,
                 autoSave: true,
-                events: {
-                    save: function( ) { 
-                        var c = this.getContent();
-                        self.set('value', this.getContent() ); 
-                    },
-                },
                 rmUnusedControls: true,
                 rmUnwantedBr: true,
+                replaceDivWithP: true,
                 controls: {
                     bold:                 { visible: true },
                     underline:            { visible: true },
@@ -61,7 +58,14 @@ App.HTMLField = Ember.TextArea.extend({
                     redo:                 { visible: true },
                 }
             });
-            //$('div.wysiwyg').attr('style', 'background-image: ;');
+
+            this.$().getWysiwyg().events.bind("getContent", function (orig) {
+                self.set('value', orig);
+                return orig;
+            });
+
+            $('div.wysiwyg').addClass("ui-widget ui-state-default ui-corner-all forminput");
+            $('div.wysiwyg ui.toolbar').css("background", "#9bcc60 !important");
         });
     }
 });
