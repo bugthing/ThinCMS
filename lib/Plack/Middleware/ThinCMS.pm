@@ -16,9 +16,11 @@ use Try::Tiny;
 use JSON::XS;
 use MIME::Base64;
 use MongoDB;
+use MongoDB::OID;
 use Template;
 use ThinCMS::MongoAPI;
 use Data::Dumper;
+use List::Util qw//;
 
 use Plack::Util::Accessor qw/cfg_file cfg mongodb json req/;
 
@@ -277,14 +279,48 @@ sub _process_tt{
     my ( $env, $type, $content ) = @_;
 
     my $root = $env->{'tt.root'};
-
-    my $tt = Template->new( INCLUDE_PATH => $root );
+    my $vars = $env->{'tt.vars'};
 
     my $path = $env->{PATH_INFO} || '/';
     $path   .= 'index.html' if $path =~ /\/$/;
     $path   =~ s{^/}{}; 
 
-    my $vars = $env->{'tt.vars'};
+    ## strip out any possible /collection/ID or /collection/
+    #my $mdb  = $vars->{mdb};
+    #my @path_parts = split /\//, $root;
+    #if ( scalar @path_parts  >= 2 ) {
+    #    # try to match collection..
+    #    my $collection_name = shift @path_parts;
+    #    my @coll_names = $mdb->collection_names;
+    #    if ( List::Util::first { $_ eq $collection_name } @coll_names ) {
+    #        # matched a collection! :)
+    #        
+    #        if ( scalar @path_parts  >= 2 ) {
+    #            my $collection  = $mdb->$collection_name;
+    #            # try to match document..
+    #            my $id = shift @path_parts;
+    #            if ( my $document = $collection->find_one({ '_id' => MongoDB::OID->new(value => $id) }) ) {
+    #                # matched a document! :)
+    #                # add the list to the vars.
+    #                $vars->{doc} = $document;
+    #            }
+    #            else {
+    #                # put unmatched document id back ..
+    #                unshift @path_parts, $id;
+    #                # add the list to the vars.
+    #                $vars->{doc_list} = $collection->find->all();
+    #            }
+    #        }
+    #    }
+    #    else {
+    #        # put unmatched collection name back ..
+    #        unshift @path_parts, $collection_name;
+    #    }
+    #}
+    ## put the path back together..
+    #$path = join('/', @path_parts);
+
+    my $tt = Template->new( INCLUDE_PATH => $root );
 
     ${ $type } = 'text/html';
 
