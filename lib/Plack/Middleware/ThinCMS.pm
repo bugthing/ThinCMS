@@ -156,7 +156,7 @@ sub _set_config{
     # is this a request for thincms admin?
     if ( $env->{PATH_INFO} =~ s|^/thincms/|/| ) {
         # add to env for thincms admin system
-        $env->{'thincmscfg'} = $cfg;
+        $env->{'thincms.cfg'} = $cfg;
         $env->{'tt.root'}     = $FindBin::Bin . '/../thincms_public';
         $env->{'tt.vars'}->{'mongodb_name'} = $web->{mongodb_name};
     }
