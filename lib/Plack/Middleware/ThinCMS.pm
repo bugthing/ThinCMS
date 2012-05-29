@@ -47,7 +47,10 @@ sub prepare_app {
     my ($self) = @_;
 
     # load config file
-    $self->cfg_file( $FindBin::Bin . '/config.yml');
+    my $conf_file = $FindBin::Bin . '/../config.yml';
+    die "Could find config: $conf_file " unless -r $conf_file;
+    $self->cfg_file( $conf_file );
+
     my $cfg = Config::Any->load_files( { files => [ $self->cfg_file() ], use_ext => 1, flatten_to_hash => 1 } );
     ($cfg) =  values %{ $cfg };
     $self->cfg( $cfg );

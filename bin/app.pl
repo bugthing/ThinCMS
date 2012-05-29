@@ -10,7 +10,7 @@ Runs the ThinCMS application via Plack (plackup)
 =cut
 
 use FindBin qw($Bin);
-use lib "$Bin/lib";
+use lib "$Bin/../lib";
 use Plack::Builder;
 
 =head2 Plack Builder
