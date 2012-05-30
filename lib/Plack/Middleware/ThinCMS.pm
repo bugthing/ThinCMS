@@ -323,6 +323,7 @@ sub _process_tt{
     ## put the path back together..
     #$path = join('/', @path_parts);
 
+    $Template::Stash::PRIVATE = undef;
     my $tt = Template->new( INCLUDE_PATH => $root );
 
     ${ $type } = 'text/html';

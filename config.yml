@@ -41,20 +41,24 @@ webs:
             type: LargeText
           - name: content
             type: HTML
-      - name: Gigs
+      - name: Upcoming
         elements: 
           - name: title
             type: Text
           - name: date
             type: Date
-          - name: content
+          - name: heading
             type: LargeText
-      - name: Blog
+          - name: content
+            type: HTML
+      - name: Thoughts
         elements: 
           - name: title
             type: Text
-          - name: content
+          - name: heading
             type: LargeText
+          - name: content
+            type: HTML
 
   - host: robertdancer.co.uk
     root: /home/benjamin/dev/github/ThinCMS/webs/robertdancer
