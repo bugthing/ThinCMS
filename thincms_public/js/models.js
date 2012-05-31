@@ -71,7 +71,11 @@ App.MongoDoc = Ember.Object.extend({
 
         // add the date stamp (should be done server side!?)
         data['_datetime_updated'] = new Date();
-        if( type == 'POST' ) data['_datetime_added'] = new Date();
+        if( type == 'POST' ) {
+            data['_datetime_added'] = this.get('_datetime_added');
+        } else {
+            data['_datetime_added'] = new Date();
+        }
 
         var self = this;
         $.ajax({
