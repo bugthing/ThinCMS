@@ -57,6 +57,7 @@ App.HTMLField = Ember.TextArea.extend({
                     undo:                 { visible: true },
                     redo:                 { visible: true },
                     createLink:           { visible: true },
+                    html:                 { visible: true },
                 }
             });
 
