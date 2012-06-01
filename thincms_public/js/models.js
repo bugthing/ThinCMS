@@ -87,10 +87,13 @@ App.MongoDoc = Ember.Object.extend({
             processData: false,
             success: function(data) {
                 if ( data.ok == 1 ) {
-                    var id;
-                    for(var key in data["_id"] ){ id = data["_id"][key]; }
-                    self.set('id', id);
-                    self.set( '_isFreshLoad', true );
+                    if ( ! this.get('_hasID') ) {
+                        var id;
+                        for(var key in data["_id"] ){ id = data["_id"][key]; }
+                        if ( ! id ) alert('could not get ID after save:' + type );
+                        self.set('id', id);
+                        self.set( '_isFreshLoad', true );
+                    }
                 }
             },
             error: function() {
@@ -117,6 +120,28 @@ App.MongoDoc = Ember.Object.extend({
                 alert('Could not delete entry');
             }
         });
+    },
+
+    observeLoadOnce: function(options) {
+      function callback() {
+
+        outcome = 'error';
+        if (this.get('_isFreshLoad')) {
+          // could do some validation here, but now dont bother
+          if ( true ) outcome = 'success';
+        }
+        else {
+            return;
+        }
+
+        (options[outcome] || Ember.K).call(this);
+
+        this.removeObserver('_isFreshLoad', callback);
+      }
+
+      this.set('_isFreshLoad', false);
+      this.addObserver('_isFreshLoad', callback);
+      this.load();
     },
 
     // internally used properties

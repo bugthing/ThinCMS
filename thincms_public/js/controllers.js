@@ -102,11 +102,17 @@ App.selectedEntryController = Ember.Object.create({
 
     selectEntry: function( entry ) {
         // if we can load this and its not just loaded..
-        if ( entry.get('_hasID') && ! entry.get('_isFreshLoad') ) {
-          entry.addObserver('_isFreshLoad', function(){
-              App.selectedEntryController.set('entry', entry);
+        if ( entry.get('_hasID') ) {
+
+          // observe the loading of a entry from the remote
+          entry.observeLoadOnce({
+            success: function(){
+                App.selectedEntryController.set('entry', entry);
+            }, 
+            error: function(){
+                alert('error loading selected entry');
+            }
           });
-          entry.load();
         }
         else {
           App.selectedEntryController.set('entry', entry);
