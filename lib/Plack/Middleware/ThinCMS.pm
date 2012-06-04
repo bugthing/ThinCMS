@@ -281,11 +281,12 @@ sub _process_tt{
     my $req = $self->req();
 
     ( ${ $type }, ${ $content } ) = ThinCMS::Template->process_request( 
-        mdb_conn => $self->mongodb(),
+        mdb         => $env->{'tt.vars'}->{mdb},
+        path        => ($env->{PATH_INFO} || '/'),
+        tt_root     => $env->{'tt.root'},
+        querystring => $req->query_parameters(),
+
         method   => $req->method()  , 
-        params   => $req->query_parameters(),
-        path     => ($env->{PATH_INFO} || '/'),
-        tt_root  => $env->{'tt.root'},
         vars     => $env->{'tt.vars'},
     );
 }
