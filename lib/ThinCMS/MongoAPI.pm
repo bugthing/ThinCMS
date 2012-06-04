@@ -19,6 +19,7 @@ MongoAPI - Process a simple MongoDB based API request.
 
 use strict;
 use warnings;
+use DateTime;
 use MongoDB::OID;
 use Data::Dumper;
 
@@ -68,8 +69,15 @@ sub process_request {
             my $document = $collection->find_one({ _id => $oid });
             $output = $document;
         }
-        elsif ( $method eq 'POST' || $method eq 'PUT' ) {
+        elsif ( $method eq 'PUT' ) {
+
             # update doc
+            
+            my $now = DateTime->now;
+            $input->{_datetime_updated} = "$now";
+            my $document = $collection->find_one({ _id => $oid });
+            $input->{_datetime_added} = $document->{_datetime_added};
+
             $collection->update({_id => $oid}, $input, {"upsert" => 1});
             $output = { 'ok' => 1, msg => 'updated document' };
         }
@@ -89,8 +97,12 @@ sub process_request {
             my @docs = $cursor->all;
             $output = { rows => \@docs };
         }
-        elsif ( $method eq 'POST' || $method eq 'PUT' ) {
+        elsif ( $method eq 'POST' ) {
+
             # create doc
+            my $now = DateTime->now;
+            $input->{_datetime_added} = "$now";
+
             $id = $collection->insert( $input );
             $output = { 'ok' => 1, msg => 'added', _id => $id };
         }

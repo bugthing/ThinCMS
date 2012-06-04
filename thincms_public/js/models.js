@@ -42,7 +42,7 @@ App.MongoDoc = Ember.Object.extend({
 
                     // add fields that should be on every doc.
                     self.set( '_datetime_updated', data['_datetime_updated'] );
-                    self.set( '_datetime_added', data['_datetime_added'] );
+                    self.set( '_datetime_added',   data['_datetime_added'] );
 
                     Ember.endPropertyChanges(self);
                     self.set( '_isFreshLoad', true );
@@ -69,14 +69,6 @@ App.MongoDoc = Ember.Object.extend({
             data[f] = this.get(f);
         }
 
-        // add the date stamp (should be done server side!?)
-        data['_datetime_updated'] = new Date();
-        if( type == 'POST' ) {
-            data['_datetime_added'] = new Date(); // set the added date.
-        } else {
-            data['_datetime_added'] = this.get('_datetime_added'); // use existing added date
-        }
-
         var self = this;
         $.ajax({
             url: this.get('_URL'),
@@ -87,13 +79,13 @@ App.MongoDoc = Ember.Object.extend({
             processData: false,
             success: function(data) {
                 if ( data.ok == 1 ) {
-                    if ( ! this.get('_hasID') ) {
+                    if ( ! self.get('_hasID') ) {
                         var id;
                         for(var key in data["_id"] ){ id = data["_id"][key]; }
                         if ( ! id ) alert('could not get ID after save:' + type );
                         self.set('id', id);
-                        self.set( '_isFreshLoad', true );
                     }
+                    self.set( '_isFreshLoad', true );
                 }
             },
             error: function() {

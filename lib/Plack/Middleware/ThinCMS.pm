@@ -7,17 +7,15 @@ use warnings;
 use parent 'Plack::Middleware';
 
 use FindBin;
-use Plack::MIME;
 use Plack::App::File;
 use Plack::Request;
-use Encode;
 use Config::Any;
 use Try::Tiny;
 use JSON::XS;
 use MIME::Base64;
 use MongoDB;
 use MongoDB::OID;
-use Template;
+use ThinCMS::Template;
 use ThinCMS::MongoAPI;
 use Data::Dumper;
 use List::Util qw//;
@@ -251,7 +249,7 @@ sub _handle_mongo_api {
 
 =item  _handle_tt 
 
-Processes a TemplateToolkit type request
+Processes a Template type request
 
 =cut
 
@@ -270,7 +268,6 @@ sub _handle_tt {
         $content = "error processing vhost template: $@";
     } else {
         $code = 200;
-        $type = 'text/html';
     }
 
     return [ $code, [ 'Content-Type' => $type ], [$content] ];
@@ -281,59 +278,16 @@ sub _process_tt{
     my $self = shift;
     my ( $env, $type, $content ) = @_;
 
-    my $root = $env->{'tt.root'};
-    my $vars = $env->{'tt.vars'};
+    my $req = $self->req();
 
-    my $path = $env->{PATH_INFO} || '/';
-    $path   .= 'index.html' if $path =~ /\/$/;
-    $path   =~ s{^/}{}; 
-
-    ## strip out any possible /collection/ID or /collection/
-    #my $mdb  = $vars->{mdb};
-    #my @path_parts = split /\//, $root;
-    #if ( scalar @path_parts  >= 2 ) {
-    #    # try to match collection..
-    #    my $collection_name = shift @path_parts;
-    #    my @coll_names = $mdb->collection_names;
-    #    if ( List::Util::first { $_ eq $collection_name } @coll_names ) {
-    #        # matched a collection! :)
-    #        
-    #        if ( scalar @path_parts  >= 2 ) {
-    #            my $collection  = $mdb->$collection_name;
-    #            # try to match document..
-    #            my $id = shift @path_parts;
-    #            if ( my $document = $collection->find_one({ '_id' => MongoDB::OID->new(value => $id) }) ) {
-    #                # matched a document! :)
-    #                # add the list to the vars.
-    #                $vars->{doc} = $document;
-    #            }
-    #            else {
-    #                # put unmatched document id back ..
-    #                unshift @path_parts, $id;
-    #                # add the list to the vars.
-    #                $vars->{doc_list} = $collection->find->all();
-    #            }
-    #        }
-    #    }
-    #    else {
-    #        # put unmatched collection name back ..
-    #        unshift @path_parts, $collection_name;
-    #    }
-    #}
-    ## put the path back together..
-    #$path = join('/', @path_parts);
-
-    $Template::Stash::PRIVATE = undef;
-    my $tt = Template->new( INCLUDE_PATH => $root );
-
-    ${ $type } = 'text/html';
-
-    if ( $tt->process( $path, $vars, $content ) ) {
-        ${ $content } = encode('utf8', ${ $content } );
-        ${ $type } = Plack::MIME->mime_type($1) if $path =~ /(\.\w{1,6})$/
-    } else {
-        ${ $content } = "Template processing error:" . $tt->error();
-    }
+    ( ${ $type }, ${ $content } ) = ThinCMS::Template->process_request( 
+        mdb_conn => $self->mongodb(),
+        method   => $req->method()  , 
+        params   => $req->query_parameters(),
+        path     => ($env->{PATH_INFO} || '/'),
+        tt_root  => $env->{'tt.root'},
+        vars     => $env->{'tt.vars'},
+    );
 }
 
 sub _process_mongo_api_request {
