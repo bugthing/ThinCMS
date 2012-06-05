@@ -11,9 +11,11 @@ use JSON::XS;
 use ThinCMS::MongoAPI;
 use Date::Parse;
 use Date::Format;
-use Template;
 use MongoDB ;
 use Try::Tiny;
+use FindBin;
+
+use Template;
 
 =head1 NAME
 
@@ -36,7 +38,7 @@ has cfg_file => (
 );
 
 has env                 => ( is => 'rw', );
-has mongodb_database    => ( is => 'rw', isa => 'MongoDB::Database',);
+has mongodb_database    => ( is => 'rw'); #, isa => 'MongoDB::Database',);
 has root                => ( is => 'rw', isa => 'Str',);
 has path                => ( is => 'rw', isa => 'Str',);
 
@@ -63,7 +65,7 @@ has config => (
 
 has mongodb => (
     is      => 'rw',
-    isa     => 'MongoDB::Connection',
+    #isa     => 'MongoDB::Connection',
     lazy    => 1,
     default => sub {
         my $self = shift;
@@ -289,7 +291,6 @@ sub _handle_tt {
 
     my ($code, $type, $content);
     eval {
-        $Template::Stash::PRIVATE = undef;
         my $tt = Template->new(
             INCLUDE_PATH => $self->root,
             VARIABLES => {
@@ -327,8 +328,6 @@ sub _handle_tt {
         $path =~ s|^/||;
         $self->path($path);
 
-        print STDERR "PROCIING: '$path' \n";
-
         $type = 'text/html';
         $type = Plack::MIME->mime_type($1) if $self->path =~ /(\.\w{1,6})$/;
 
@@ -341,7 +340,7 @@ sub _handle_tt {
 
     if ( $@ ) {
         $code = 404;
-        $content = "error processing mongo tt request: $@";
+        $content = "error processing tt request: $@";
     } else {
         $code = 200;
     }

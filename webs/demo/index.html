@@ -1,65 +1,50 @@
 <!doctype html>
 <html>
 <head>
-  <title>ThinCMS</title>
-  <meta name="description" content="A demo site to show how the ThinCMS vhosts are built">
-  <meta name="author" content="ThinCMS">
-  <link rel="shortcut icon" href="./img/favicon.ico" />
-  <link rel="stylesheet" href="./css/style.css?v=2" />
+<title>ThinCMS</title>
+<meta name="description" content="A demo site to show how the ThinCMS vhosts are built">
+<meta name="author" content="ThinCMS">
+<link rel="shortcut icon" href="./img/favicon.ico" />
+<link rel="stylesheet" href="./css/style.css?v=2" />
 </head>
 <body>
+<h1> This is a regular HTML page </h1>
 
-    <h1> This is a regular HTML page </h1>
-    
-    <p> 
-        Except ... if you are cunning about the URL requested you could find there is
-        <br />
-        &nbsp; &nbsp; 
-        &#91;&#37 doc &#37;&#93;
-        <br />
-        and&#47;or 
-        <br />
-        &nbsp; &nbsp; 
-        &#91;&#37 list &#37;&#93;
-        <br />
-        available
-    </p>
-    
-        [% USE pages = ThinCMS('Pages') %]
-        [% page = pages.doc( { title => 'Blog' } ); %]
-        <h1>[% page.title %] </h1>
-        <p>[% page.content %] </p>
+[% USE pages = ThinCMS('Pages') %]
+[% page = pages.doc( { title => 'Blog' } ); %]
+<h1>[% page.title %] </h1>
+<p>[% page.content %] </p>
 
-    <p>
+<ul>
+[% USE blogs = ThinCMS('Blog', { perpage => 1 } ) %] 
+[% FOREACH item IN blogs.all %] 
+    <li>
+        <div id='id'>[% item._id %]</div>
+        <div id='title'>[% item.title %]</div>
+        <div id='date'>[% item.date %]</div>
+        <div id='datetime_added'>[% item._datetime_added %]</div>
+        <div id='datetime_updated'>[% item._datetime_updated %]</div>
+        <div id='datetime_updated_filter_time'>[% item._datetime_updated FILTER time %]</div>
+        <div id='datetime_updated_filter_date'>[% item._datetime_updated FILTER date %]</div>
+        <div id='datetime_updated_filter_datetime'>[% item._datetime_updated FILTER datetime %]</div>
+        <div id='content'>[% item.content %]</div>
+        <a href='Blog/index.html?id=[% item._id %]'>More</a>
+    </li>
+[% END  %] 
+</ul>
 
-    	[% USE blogs = ThinCMS('Blog', { perpage => 1 } ) %] 
-    	<ul>
-    	[% FOREACH item IN blogs.all %] 
-    	    <li>
-    	        [% item._id %]
-    	        [% item.title %]
-    	        [% item.date FILTER time %]
-    	        [% item._datetime_added FILTER datetime %]
-    	        [% item.content %]
-                <a href="Blog/index.html?id=[% item._id %]">More</a>
-    	    </li>
-    	[% END  %] 
-    	</ul>
-
-    </p>
-
-    <div class="navigation">
-        <div class="alignleft"> 
-            [% IF blogs.pager.previous_page %]
-                <a href="?page=[% blogs.pager.previous_page %]">Older thoughts</a>    
-            [% END %]
-        </div>
-        <div class="alignright"> 
-            [% IF blogs.pager.next_page %]
-                <a href="?page=[% blogs.pager.next_page %]">Newer thoughts</a>    
-            [% END %]
-        </div>
+<div class="navigation">
+    <div class="alignleft"> 
+        [% IF blogs.pager.previous_page %]
+            <a href="?page=[% blogs.pager.previous_page %]">Newer thoughts</a>    
+        [% END %]
     </div>
+    <div class="alignright"> 
+        [% IF blogs.pager.next_page %]
+            <a href="?page=[% blogs.pager.next_page %]">Older thoughts</a>    
+        [% END %]
+    </div>
+</div>
     
     
 </body>

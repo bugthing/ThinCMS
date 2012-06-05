@@ -1,0 +1,32 @@
+
+mongodb:
+    host: localhost
+    port: 670420
+
+webs:
+
+  - host: localhost
+    root: /home/benjamin/dev/github/ThinCMS/webs/demo
+    default: 1
+    mongodb_name: demo
+    admin_user: demo
+    admin_pass: d3mo
+    entrytypes:
+      - name: Pages
+        elements: 
+          - name: title
+            type: Text
+          - name: content
+            type: HTML
+      - name: Blog
+        elements: 
+          - name: title
+            type: Text
+          - name: date
+            type: Date
+          - name: content
+            type: LargeText
+    time2str:
+      date: '%d/%m/%y'
+      datetime: '%d/%m/%y %H:%M'
+

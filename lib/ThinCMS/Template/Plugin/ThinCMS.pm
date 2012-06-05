@@ -15,6 +15,8 @@ use overload '""'  => sub {
 
 use base qw( Template::Plugin );
 
+$Template::Stash::PRIVATE = undef; # allows vars starting the '_' in templates.
+
 sub new {
     my ($class, $context, $data, $params) = @_;
 
@@ -23,12 +25,12 @@ sub new {
 
     my $mdb = $context->{STASH}->{mdb};
     return $class->error('could not get mongodb (mdb) from ThinCMS')
-        unless ref $mdb eq 'MongoDB::Database';
+        unless ref($mdb) =~ /MongoDB::Database/;
 
     my $collection = $mdb->$collection_name;
 
     return $class->error('could not get collection from ThinCMS')
-        unless ref $collection eq 'MongoDB::Collection';
+        unless ref($collection) =~ /MongoDB::Collection/;
  
     $params ||= {};
     return $class->error('invalid table parameters, expecting a hash')
