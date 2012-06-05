@@ -324,8 +324,8 @@ sub _handle_tt {
         );
 
         my $path = $self->path;
-        $path =~ s|/$|index.html|;
-        $path =~ s|^/||;
+        $path =~ s|(.*?/)$|$1/index.html|;
+        $path =~ s|^/+||;
         $self->path($path);
 
         $type = 'text/html';
