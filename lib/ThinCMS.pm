@@ -1,4 +1,5 @@
 package ThinCMS;
+# ABSTRACT: Think of VHosts, TT, MongoDB and CMS and you have ThinCMS;
 
 use Moose;
 use Config::Any;
@@ -13,6 +14,20 @@ use Date::Format;
 use Template;
 use MongoDB ;
 use Try::Tiny;
+
+=head1 NAME
+
+=head1 DESCRIPTION
+
+=head2 ATTRIBUTES
+
+=over
+
+=item cfg_file
+
+This is the only requires attribute to construct this object.
+
+=cut
 
 has cfg_file => (
     is     => 'rw',
@@ -58,10 +73,20 @@ has mongodb => (
     }
 );
 
-sub request {
-    my $self = shift;
-    return Plack::Request->new( $self->env );
-};
+=back
+
+=head2 METHODS
+
+=over
+
+=cut
+
+=item vhost_config 
+
+Depending on the HOST requested this returns the appropreate 'web' hash from the config
+that matches that HOST. (e.g. only 'demo' web config hash for 'demo.somedomain.com')
+
+=cut
 
 sub vhost_config {
     my $self = shift;
@@ -84,6 +109,15 @@ sub vhost_config {
     return $web;
 }
 
+=item request 
+
+=cut
+
+sub request {
+    my $self = shift;
+    return Plack::Request->new( $self->env );
+};
+
 sub is_thincms_request {
     my $self = shift;
     return $self->path =~ m|^/thincms| ? 1 : 0;
@@ -93,6 +127,14 @@ sub is_mongoapi_request {
     my $self = shift;
     return $self->path =~ m|^/mongodb| ? 1 : 0;
 }
+
+=head _shift_path 
+
+Takes the PATH and removes an directory from the start of the path.
+Once processed this sets the new path in: L<env> and L<path>, ready for 
+processing TT, Static or MongoAPI requests.
+
+=cut
 
 sub _shift_path {
     my $self = shift;
@@ -108,6 +150,13 @@ sub _shift_path {
 
     $self->path( $self->env->{PATH_INFO} );
 }
+
+=item process( $env )
+
+Method to be invoked from Plack::Middleware::ThinCMS, looks at $env and handles
+accordingly.
+
+=cut
 
 sub process {
     my $self = shift;
@@ -151,6 +200,16 @@ sub process {
     return;
 }
 
+=item _handle_static
+
+Handles static content.
+
+B<Returns>
+
+undef    - no static content processed.
+ArrayRef - Auth required.
+
+=cut
 
 sub _handle_static {
     my $self = shift;
@@ -160,6 +219,17 @@ sub _handle_static {
     }
     return;
 }
+
+=item _handle_mongo_api
+
+Handles MongoDB API request
+
+B<Returns>
+
+ArrayRef - Auth required.
+
+=cut
+
 
 sub _handle_mongo_api {
     my $self = shift;
@@ -203,6 +273,16 @@ sub _handle_mongo_api {
     return [ $code, [ 'Content-Type' => $type ], [$content] ];
 }
 
+
+=item _handle_tt
+
+Handles Template Toolkit request.
+
+B<Returns>
+
+ArrayRef - Auth required.
+
+=cut
 
 sub _handle_tt {
     my $self = shift;
@@ -273,6 +353,11 @@ sub _handle_tt {
 
 Handles authentication if it thinks it needs to.
 
+B<Returns>
+
+undef    - not auth required (already done)
+ArrayRef - Auth required.
+
 =cut
 
 sub _handle_auth {
@@ -303,6 +388,12 @@ sub _handle_auth {
     ];
 }
 
+=back
+
+=cut
+
 __PACKAGE__->meta->make_immutable;
 
 1;
+
+__END__
