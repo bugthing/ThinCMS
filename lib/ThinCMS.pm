@@ -243,13 +243,16 @@ sub _handle_tt {
         );
 
         my $path = $self->path;
-        $path =~ s|/$|/index.html|;
+        $path =~ s|/$|index.html|;
         $path =~ s|^/||;
+        $self->path($path);
+
+        print STDERR "PROCIING: '$path' \n";
 
         $type = 'text/html';
-        $type = Plack::MIME->mime_type($1) if $path =~ /(\.\w{1,6})$/;
+        $type = Plack::MIME->mime_type($1) if $self->path =~ /(\.\w{1,6})$/;
 
-        if ( $tt->process( $path, {}, \$content ) ) {
+        if ( $tt->process( $self->path, {}, \$content ) ) {
             $content = Encode::encode('utf8', $content );
         } else {
             die "Template processing error:" . $tt->error();
@@ -276,10 +279,7 @@ sub _handle_auth {
     my $self = shift;
     my $env = shift;
 
-    # only do auth when this is a thincms type request
-    return unless exists $env->{'thincms.cfg'};
-
-    my $auth = $self->request->headers('HTTP_AUTHORIZATION');
+    my $auth = $self->env->{HTTP_AUTHORIZATION};
     if ($auth =~ /^Basic (.*)$/) {
         my($user, $pass) = split /:/, (MIME::Base64::decode($1) || ":");
         $pass = '' unless defined $pass;
@@ -288,7 +288,7 @@ sub _handle_auth {
         my $cfg_pass = $self->vhost_config->{admin_pass};
 
         if ( $user eq $cfg_user && $pass eq $cfg_pass ) {
-            $env->{REMOTE_USER} = $user;
+            $self->env->{REMOTE_USER} = $user;
             return;
         }
     }
