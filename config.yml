@@ -59,3 +59,7 @@ webs:
             type: LargeText
           - name: content
             type: HTML
+    time2str:
+      date: '%d/%m/%y'
+      datetime: '%d/%m/%y %H:%M'
+

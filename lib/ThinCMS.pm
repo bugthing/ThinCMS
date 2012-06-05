@@ -304,19 +304,19 @@ sub _handle_tt {
                 date => sub {
                     my ( $src_date_string ) = @_;
                     my $epoch = Date::Parse::str2time( $src_date_string );
-                    my $format = '%Y-%m-%d';
+                    my $format = $self->vhost_config->{time2str}->{date} || '%Y-%m-%d';
                     return Date::Format::time2str( $format, $epoch );
                 },
                 time => sub {
                     my ( $src_date_string ) = @_;
                     my $epoch = Date::Parse::str2time( $src_date_string );
-                    my $format = '%H:%M:%S';
+                    my $format = $self->vhost_config->{time2str}->{time} || '%H:%M:%S';
                     return Date::Format::time2str( $format, $epoch );
                 },
                 datetime => sub {
                     my ( $src_date_string ) = @_;
                     my $epoch = Date::Parse::str2time( $src_date_string );
-                    my $format = '%Y-%m-%d %H:%M:%S';
+                    my $format = $self->vhost_config->{time2str}->{datetime} || '%Y-%m-%d %H:%M:%S';
                     return Date::Format::time2str( $format, $epoch );
                 },
             },
