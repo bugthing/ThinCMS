@@ -98,7 +98,7 @@
 
     <!-- EmberJS Application -->
     <script>
-        var App = Em.Application.create({ mdb: '[% mongodb_name %]' });
+        var App = Em.Application.create();
     </script>
 	<script src="./js/models.js"></script>
 	<script src="./js/views.js"></script>
@@ -114,7 +114,7 @@
 
         /* generated from tt var thincms.entrytypes */
         [% USE SimpleJson %]
-        [% FOREACH et IN thincms.entrytypes %]
+        [% FOREACH et IN entrytypes %]
             entryTypes.push( App.EntryType.create({
                 name: '[% et.name %]',
                 cfg: { elements: [% SimpleJson.toJson(et.elements) %] }

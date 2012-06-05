@@ -8,10 +8,6 @@ App.MongoDoc = Ember.Object.extend({
 
     entryType: Ember.required(), // object that holds meta data about the Doc
 
-    mdb: function(){    // name of mongo database to use.
-        return this.get('entryType').get('mdb');
-    }.property('entryType'),
-
     mcoll: function(){  // name of mongo collection to use.
         return this.get('entryType').get('mcoll');
     }.property('entryType'),
@@ -145,7 +141,7 @@ App.MongoDoc = Ember.Object.extend({
         return false;
     }.property(),
     _URL: function() {
-        var url = 'mongodb/' + this.get('mdb') + '/' + this.get('mcoll');
+        var url = 'mongodb/' + this.get('mcoll');
         if ( this.get('_hasID') ) url = url + '/' + this.get('id');
         return url;
     }.property()
@@ -160,9 +156,6 @@ App.EntryType = Ember.Object.extend({
     // these are dynamicly generated propertys and a used as helper methods when 
     // constructing MongoDoc based objects (see above)
 
-    mdb: function() {
-        return App.get('mdb');
-    }.property('name'),
     mcoll: function() {
         return this.get('name');
     }.property('name'),
@@ -194,7 +187,7 @@ App.EntryType = Ember.Object.extend({
         var mcoll = this.get('mcoll');
         var self = this;
         $.ajax({
-            url: 'mongodb/' + App.get('mdb') + '/' + mcoll,
+            url: 'mongodb/' + mcoll,
             dataType: 'json',
             success: function(data) {
                 var rows = new Array();

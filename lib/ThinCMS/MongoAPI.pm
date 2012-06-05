@@ -43,25 +43,22 @@ sub process_request {
     my ( $class ) = shift;
     my ( %req ) = @_;
 
-    my $method = $req{method};
-    my $param  = $req{params};
-    my $path   = $req{path};
-    my $input  = $req{input};
-    my $mdb    = $req{mdb_conn};
-    my $output = {};
+    my $method   = $req{method};
+    my $param    = $req{params};
+    my $path     = $req{path};
+    my $input    = $req{input};
+    my $database = $req{mdb_conn};
+    my $output   = {};
 
     print "MongoAPI - Request:" . Dumper( \%req ) if ( $ENV{DEBUG} );
 
-    my ( $db, $coll, $id ) = split(/\//, $path);
-    
-    if ( $db eq 'databases' ) {
-        # List databases
-        my @dbs = $mdb->database_names;
-        $output = { rows => \@dbs };
-    }
-    elsif ( $db && $coll && $id ) {
+    $path =~ s|^/||;
+    my ( $coll, $id ) = split(/\//, $path);
+
+    print "MongoAPI - Parts: $coll - $id \n" if ( $ENV{DEBUG} );
+
+    if ( $coll && $id ) {
         # Document specific
-        my $database   = $mdb->$db;
         my $collection = $database->$coll;
         my $oid = MongoDB::OID->new(value => $id);
         if ( $method eq 'GET' ) {
@@ -87,9 +84,8 @@ sub process_request {
             $output = { 'ok' => 1, msg => 'deleted document' };
         }
     }
-    elsif ( $db && $coll && ! $id ) {
+    elsif ( $coll && ! $id ) {
         # Collection specific
-        my $database   = $mdb->$db;
         my $collection = $database->$coll;
         if ( $method eq 'GET' ) {
             # list docs
@@ -112,9 +108,8 @@ sub process_request {
             $output = { 'ok' => 1, msg => 'deleted collection' };
         }
     }
-    elsif ( $db && ! $coll && ! $id ) {
+    elsif ( ! $coll && ! $id ) {
         # Database specific
-        my $database = $mdb->$db;
         if ( $method eq 'GET' || $method eq 'POST' || $method eq 'PUT' ) {
             # list colls
             my @colls = $database->collection_names;
