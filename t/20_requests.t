@@ -40,7 +40,7 @@ test_psgi $app, sub {
         ok( $res->content =~ m|\Q$html\E|, "Checking page for html: $html" );
     }
 
-    my $res = $cb->(GET '/?page=2');
+    $res = $cb->(GET '/?page=2');
     diag( $res->content );
     foreach my $html ( (q|<div id='id'>4dcd0090ef2c15e030000001</div>|,
                         q|<div id='title'>Test 2nd Entry</div>|,

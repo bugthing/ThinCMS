@@ -6,7 +6,7 @@ mongodb:
 webs:
 
   - host: localhost
-    root: /home/benjamin/dev/github/ThinCMS/webs/demo
+    root: ./webs/demo
     default: 1
     mongodb_name: demo
     admin_user: demo
