@@ -31,18 +31,7 @@ This is called when a Plack based app starts up.
 
 sub prepare_app {
     my ($self) = @_;
-
     $self->cfg_file( $FindBin::Bin . '/../config.yml' ) unless $self->cfg_file;
-
-    my %thincms_args;
-    $thincms_args{cfg_file} = $self->cfg_file;
-
-    # introducted for testing, allows us to pass our own MongoDB connection.
-    if ( $self->mongodb ) {
-        $thincms_args{mongodb} = $self->mongodb;
-    }
-
-    $self->thincms( ThinCMS->new(%thincms_args) );
 }
 
 =item call
@@ -54,6 +43,17 @@ This is called on every http request.
 sub call {
     my $self = shift;
     my $env  = shift;
+
+    # get config.
+    my %thincms_args;
+    $thincms_args{cfg_file} = $self->cfg_file;
+
+    # introducted for testing, allows us to pass our own MongoDB connection.
+    if ( $self->mongodb ) {
+        $thincms_args{mongodb} = $self->mongodb;
+    }
+    # instanciate the thincms object
+    $self->thincms( ThinCMS->new(%thincms_args) );
 
     my $res;
 
